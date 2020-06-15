@@ -112,3 +112,7 @@ $ curl 'http://localhost:8003/orders/1'
 Ensure RabbitMQ, PostgreSQL and Redis are running and `config.yaml` files for each service are configured correctly.
 
 `$ make coverage`
+
+## Debug / Project setup for repo
+
+Please refer to [README-DevEnv.md](README-DevEnv.md)

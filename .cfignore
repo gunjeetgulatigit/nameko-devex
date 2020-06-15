@@ -1,3 +1,4 @@
+dev_run*.sh
 *.egg-info
 .cache
 *.pyc
@@ -5,6 +6,5 @@ htmlcov
 .coverage
 */wheelhouse
 *.sql
-.DS_Store
 **/*.log
 stats.xml

@@ -1,0 +1,11 @@
+id;title;passenger_capacity;maximum_speed;in_stock
+the_odyssey;The Odyssey;101;5;10
+the_honda;The Honda;201;10;100
+telsa;The Telsa;201;10;100
+toyota;The Toyoya;201;10;100
+hyndai;The Hyndai;201;10;100
+bmw;The BMW;201;10;100
+acura;The Acura;101;10;200
+gm;General Motors;101;10;200
+vw;Bentley;101;10;200
+fiat;Alfa Romeo;101;10;200
