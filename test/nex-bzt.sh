@@ -49,5 +49,5 @@ bzt -report -o scenarios.nex.default-address=${STD_APP_URL} \
     -o execution.0.hold-for=${HOLD} \
     -o execution.0.ramp-up=${RAMP_UP} \
     -o modules.console.disable=true \
-    -o settings.artifacts-dir=$(mktemp -d -t bzt) \
+    -o settings.artifacts-dir=$(mktemp -d -t bzt.XXXX) \
     ./test/nex-bzt.yml
