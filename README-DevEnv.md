@@ -122,3 +122,7 @@ nameko service in debug mode. please connect to port 5678 to start service
 // This will run by default 3 users, for 3 minutes with 1 minute ramp-up time
 ```
 ![PerfTest](test/perftest.png)
+
+## Deployment to CloudFoundry / (similar to Heruku)
+
+Please refer to [README-DevOps.md](README-DevOps.md)

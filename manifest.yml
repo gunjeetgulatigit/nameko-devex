@@ -1,0 +1,45 @@
+---
+defaults: &defaults
+  buildpacks:
+    - python_buildpack
+  memory: 256M
+  disk_quota: 4G
+  health-check-type: process
+  no-route: true
+  services:
+    - nex-rabbitmq
+    - nex-postgres
+    - nex-redis
+  env:
+    APP_ENV: HelloWorld
+
+# Majestic Monolith - All in One
+applications:
+  - name: nex-namekoexample
+    <<: *defaults
+    no-route: false
+    health-check-type: port
+    command: bash ./run.sh gateway.service products.service orders.service
+
+# Majestic Microservice (need to uncomment above)
+# applications:
+#   - name: nex-namekoexample
+#     <<: *defaults
+#     no-route: false
+#     health-check-type: port
+#     memory: 128M
+#     command: bash ./run.sh gateway.service 
+
+#   - name: nex-namekoexample-orders
+#     <<: *defaults
+#     no-route: true
+#     health-check-type: process
+#     memory: 128M
+#     command: bash ./run.sh orders.service
+
+#   - name: nex-namekoexample-products
+#     <<: *defaults
+#     no-route: true
+#     health-check-type: process
+#     memory: 128M
+#     command: bash ./run.sh products.service

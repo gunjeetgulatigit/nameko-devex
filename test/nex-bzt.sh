@@ -14,9 +14,10 @@ fi
 PREFIX=$1
 
 if [ "${PREFIX}" != "local" ]; then
-    echo "not implemented yet"
-    exit 1
+    echo "Production Performance Test in CF"
+    STD_APP_URL=https://${PREFIX}
 else
+    echo "Local Performance Test"
     STD_APP_URL=http://localhost:8000
 fi
 

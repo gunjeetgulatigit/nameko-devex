@@ -1,5 +1,7 @@
-AMQP_URI: amqp://${RABBIT_USER:guest}:${RABBIT_PASSWORD:guest}@${RABBIT_HOST:localhost}:${RABBIT_PORT:5672}/
+AMQP_URI: ${AMQP_URI:"amqp://guest:guest@localhost:5672"}
 PRODUCT_IMAGE_ROOT: "http://www.example.com/airship/images"
 DB_URIS:
-    "orders:Base": postgresql://${DB_USER:postgres}:${DB_PASSWORD:postgres}@${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:orders}
+    "orders:Base": ${POSTGRES_URI:"postgres://postgres:postgres@localhost:5432/orders"}
 REDIS_URI: ${REDIS_URI:"redis://localhost:6379/dev"}
+max_workers: ${MAX_WORKERS:5}
+WEB_SERVER_ADDRESS: 0.0.0.0:${PORT:8000}

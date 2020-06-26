@@ -28,15 +28,9 @@ target_metadata = DeclarativeBase.metadata
 
 
 def get_url():
+    print("---" + os.getenv("POSTGRES_URI"))
     return (
-        "postgresql://{db_user}:{db_pass}@{db_host}:"
-        "{db_port}/{db_name}"
-    ).format(
-        db_user=os.getenv("DB_USER", "postgres"),
-        db_pass=os.getenv("DB_PASSWORD", "postgres"),
-        db_host=os.getenv("DB_HOST", "localhost"),
-        db_port=os.getenv("DB_PORT", "5432"),
-        db_name=os.getenv("DB_NAME", "orders"),
+        os.getenv("POSTGRES_URI")
     )
 
 
