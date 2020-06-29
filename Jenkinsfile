@@ -1,11 +1,11 @@
 pipeline {
     agent {
-        docker { image 'continuumio/miniconda3' }
+        docker { image 'rabbitmq:3-management' }
     }
     stages {
         stage('Test') {
             steps {
-                sh 'conda env list'
+                sh 'netstat -an | grep LISTEN'
             }
         }
     }
