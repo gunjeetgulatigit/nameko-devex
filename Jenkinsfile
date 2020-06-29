@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'echo "hello\n\asdasd\n" | nc localhost 5672'
+                sh 'echo "hello\\nasdasd\\n" | nc localhost 5672'
             }
         }
     }
