@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'netstat -an | grep LISTEN'
+                sh 'echo "hello\n\asdasd\n" | nc localhost 5672'
             }
         }
     }
