@@ -1,11 +1,11 @@
 pipeline {
     agent {
-        docker { image 'node:7-alpine' }
+        docker { image 'continuumio/miniconda3' }
     }
     stages {
         stage('Test') {
             steps {
-                sh 'node --version'
+                sh 'conda env list'
             }
         }
     }
