@@ -5,8 +5,8 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'conda env create -f environment_dev.yml'
-                sh 'conda activate namekoexample'
+                sh 'conda update conda'
+                sh 'ls -lah'
             }
         }
     }
