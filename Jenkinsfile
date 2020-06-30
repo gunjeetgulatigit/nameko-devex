@@ -1,12 +1,12 @@
 pipeline {
     agent {
-        docker { image 'continuumio/miniconda3' }
+        docker { image 'linuxbrew/linuxbrew' }
     }
     stages {
         stage('Test') {
             steps {
-                sh 'conda update conda'
-                sh 'ls -lah'
+                sh 'brew install git'
+                sh 'git clone https://github.com/nameko/nameko-examples'
             }
         }
     }
