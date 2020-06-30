@@ -45,7 +45,7 @@ pipeline {
                     rabbitmqctl set_user_tags rabbit administrator
                     rabbitmqctl set_permissions --vhost '/' 'rabbit' '.' '.' '.' 
 
-                    echo "Starting Redis Service
+                    echo "Starting Redis Service"
                     source activate redis
                     # get config file for version 5
                     curl -s https://raw.githubusercontent.com/antirez/redis/5.0/redis.conf > ./redis.conf
