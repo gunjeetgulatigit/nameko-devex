@@ -13,7 +13,7 @@ pipeline {
                     cd nameko-examples
                     ls -lah
                     whoami
-                    conda env create -f environment_dev.yml --prefix .condajenkins
+                    conda env create -f environment_dev.yml
                     conda activate "$(pwd)/.condajenkins"
 				'''
             }
