@@ -8,6 +8,8 @@ pipeline {
 				sh '''#!/bin/bash
 					git clone https://github.com/gitricko/nameko-examples
                     cd nameko-examples
+                    ls -lah
+                    whoami
                     conda env create -f environment_dev.yml
                     conda activate namekoexample
 				'''
