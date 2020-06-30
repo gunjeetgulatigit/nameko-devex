@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Local-Build Dev Container') {
+            steps {
+                echo 'Starting to build docker image'
+
+                script {
+                    def customImage = docker.build("devcontainer:latest")
+                    // customImage.push()
+                }
+            }
+        }
+    }
+    post {
+		always {
+            deleteDir()
+		}
+    }
+}
