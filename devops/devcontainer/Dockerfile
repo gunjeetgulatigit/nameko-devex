@@ -40,11 +40,12 @@ RUN mkdir -p $DEVUSER_HOME \
   && groupadd -g ${gid} ${group} \
   && useradd -d "$DEVUSER_HOME" -u ${uid} -g ${gid} -m -s /bin/bash ${user}
 
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ${DEVUSER_HOME}/.bashrc \
+  && echo "conda activate base" >> ${DEVUSER_HOME}/.bashrc
+
 # Install following backing service in (base)
 # RabbitMQ, Postgres, Reddis, MongoDB
 RUN conda create -n rabbitmq rabbitmq-server=3.7.16 -c conda-forge
 RUN conda create -n mongodb mongodb=4.0.3 -c conda-forge
 RUN conda create -n postgres postgresql=12.2 -c anaconda
 RUN conda create -n redis redis=5.0.3 -c anaconda
-
-RUN conda env list
