@@ -5,11 +5,13 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'cd /tmp'
-                sh 'git clone https://github.com/gitricko/nameko-examples'
-                sh 'cd nameko-examples'
-                sh 'conda env create -f environment_dev.yml'
-                sh 'conda activate namekoexample'
+				sh '''#!/bin/bash
+					cd /tmp
+					git clone https://github.com/gitricko/nameko-examples
+                    cd nameko-examples
+                    conda env create -f environment_dev.yml
+                    conda activate namekoexample
+				'''
             }
         }
     }
