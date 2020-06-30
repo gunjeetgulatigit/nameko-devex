@@ -6,7 +6,6 @@ pipeline {
         stage('Test') {
             steps {
 				sh '''#!/bin/bash
-					cd /tmp
 					git clone https://github.com/gitricko/nameko-examples
                     cd nameko-examples
                     conda env create -f environment_dev.yml
@@ -14,5 +13,18 @@ pipeline {
 				'''
             }
         }
+    }
+    post {
+		always {
+			// script {
+			// 	// undeploy first
+			// 	sh '''
+			// 		echo "post: Undeploy landscape: ${PREFIX}"
+			// 		./devops/cf/pmc-undeploy.sh -f ${PREFIX}
+			// 	'''
+			// }
+			// archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log', fingerprint: true
+            deleteDir()
+		}
     }
 }
