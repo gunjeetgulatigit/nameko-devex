@@ -49,7 +49,7 @@ pipeline {
                     source activate redis
                     # get config file for version 5
                     curl -s https://raw.githubusercontent.com/antirez/redis/5.0/redis.conf > ./redis.conf
-                    redis-server /redis.conf  --daemonize yes
+                    redis-server ./redis.conf  --daemonize yes
                     sleep 5
                     echo 'CONFIG Set "requirePass" ""' | redis-cli
 				'''
