@@ -37,7 +37,7 @@ pipeline {
             steps {
 				sh '''#!/bin/bash
                     echo "Starting RabbitMQ Service"
-                    conda activate rabbitmq
+                    source activate rabbitmq
                     rabbitmq-server -detached
                     sleep 30
                     rabbitmq-plugins enable rabbitmq_management
