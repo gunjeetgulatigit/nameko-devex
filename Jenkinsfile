@@ -10,7 +10,7 @@ pipeline {
             steps {
 				sh '''#!/bin/bash
                     apt-get update
-                    apt-get install build-essential
+                    apt-get -y install build-essential
 					git clone https://github.com/gitricko/nameko-examples
                     cd nameko-examples
                     ls -lah
