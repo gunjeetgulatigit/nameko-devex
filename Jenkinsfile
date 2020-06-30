@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker { 
-            image 'continuumio/miniconda3' 
+            image 'devcontainer:latest' 
             // args '--user root'
         }
     }
@@ -9,8 +9,6 @@ pipeline {
         stage('Test') {
             steps {
 				sh '''#!/bin/bash
-                    apt-get update
-                    apt-get -y install build-essential
 					git clone https://github.com/gitricko/nameko-examples
                     cd nameko-examples
                     ls -lah
