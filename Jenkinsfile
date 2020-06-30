@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker { 
             image 'continuumio/miniconda3' 
-            args '--user root'
+            // args '--user root'
         }
     }
     stages {
@@ -13,8 +13,8 @@ pipeline {
                     cd nameko-examples
                     ls -lah
                     whoami
-                    conda env create -f environment_dev.yml
-                    conda activate namekoexample
+                    conda env create -f environment_dev.yml --prefix .condajenkins
+                    conda activate "$(pwd)/.condajenkins"
 				'''
             }
         }
