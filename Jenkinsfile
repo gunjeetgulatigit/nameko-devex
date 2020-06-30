@@ -6,7 +6,6 @@ pipeline {
     }
 
     options {
-        ansiColor('xterm')
         buildDiscarder(logRotator(daysToKeepStr: '60'))
         timeout(time: 4, unit: 'HOURS')
         // skipDefaultCheckout()
