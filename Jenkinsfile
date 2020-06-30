@@ -54,7 +54,8 @@ pipeline {
                     echo 'CONFIG Set "requirePass" ""' | redis-cli
 
                     echo "Starting Postgres Service"
-                    su devuser
+                    su - devuser
+                    source ~/.bashrc
                     source activate postgres
                     DB_DIR=$(mktemp -d -t postgres.XXX)
                     initdb -D ${DB_DIR}/postgres
