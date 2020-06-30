@@ -37,7 +37,8 @@ pipeline {
 				sh '''#!/bin/bash
                     whoami
                     pwd
-                    ls -l
+                    conda env list
+                    exit 0
 					// git clone https://github.com/gitricko/nameko-examples
                     // cd nameko-examples
                     // ls -lah
