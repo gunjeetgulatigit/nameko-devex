@@ -7,7 +7,7 @@ USER root
 
 # Install the latest Docker CE binaries and add user `jenkins` to the docker group
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install apt-transport-https \
+    apt-get -y --no-install-recommends install apt-transport-https build-essentials \
       ca-certificates \
       curl \
       gnupg2 \
