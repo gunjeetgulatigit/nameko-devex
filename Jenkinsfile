@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        docker { image 'continuumio/miniconda3' }
+        docker { 
+            image 'continuumio/miniconda3' 
+            args '--user root'
+        }
     }
     stages {
         stage('Test') {
