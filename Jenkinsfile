@@ -17,6 +17,7 @@ pipeline {
                     whoami
                     conda env create -f environment_dev.yml
                     source activate namekoexample
+                    nameko -h
 				'''
             }
         }
