@@ -72,7 +72,7 @@ pipeline {
                     ./dev_run.sh gateway.service orders.service products.service > app.log &
 
                     echo "Start smoketest ..."
-                    ./test/nex-smoketest.sh local
+                    ./devops/nex-smoketest.sh local
 
 				'''
             }
