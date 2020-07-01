@@ -41,7 +41,7 @@ curl -s -XPOST  "${STD_APP_URL}/products" \
 echo
 # Test: Get Product
 echo "=== Getting product id: the_odyssey ==="
-curl -s "${STD_APP_URL}/products/the_odyssey" | jq .
+curl -s "${STD_APP_URL}/products/the_odyssey" | jq -r .
 
 # Test: Create Order
 echo "=== Creating Order ==="
@@ -51,4 +51,6 @@ ID=$(echo ${ORDER_ID} | jq -r '.id')
 
 # Test: Get Order back
 echo "=== Getting Order ==="
-curl -s "${STD_APP_URL}/orders/${ID}" | jq -r
+echo "${STD_APP_URL}/orders/${ID}"
+curl -s "${STD_APP_URL}/orders/${ID}"
+curl -s "${STD_APP_URL}/orders/${ID}" | jq -r .
