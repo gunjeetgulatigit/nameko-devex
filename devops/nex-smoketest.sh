@@ -51,6 +51,4 @@ ID=$(echo ${ORDER_ID} | jq -r '.id')
 
 # Test: Get Order back
 echo "=== Getting Order ==="
-echo "${STD_APP_URL}/orders/${ID}"
-curl -s "${STD_APP_URL}/orders/${ID}"
 curl -s "${STD_APP_URL}/orders/${ID}" | jq -r .
