@@ -68,17 +68,12 @@ pipeline {
 				sh '''#!/bin/bash
                     conda env create -f environment_dev.yml
                     source activate namekoexample
-                    ./dev_run.sh gateway.service orders.service products.service &
+                    echo "Start app service ..."
+                    ./dev_run.sh gateway.service orders.service products.service > app.log &
 
-                    netstat -an
-                    exit 0
-					// git clone https://github.com/gitricko/nameko-examples
-                    // cd nameko-examples
-                    // ls -lah
-                    // whoami
-                    // conda env create -f environment_dev.yml
-                    // source activate namekoexample
-                    // nameko -h
+                    echo "Start smoketest ..."
+                    ./test/nex-smoketest.sh local
+
 				'''
             }
         }
@@ -92,7 +87,7 @@ pipeline {
 			// 		./devops/cf/pmc-undeploy.sh -f ${PREFIX}
 			// 	'''
 			// }
-			// archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log', fingerprint: true
+			archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log', fingerprint: true
             deleteDir()
 		}
     }
