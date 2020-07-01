@@ -54,16 +54,10 @@ pipeline {
                     echo 'CONFIG Set "requirePass" ""' | redis-cli
 
                     echo "Starting Postgres Service"
-                    su - devuser
-                    source ~/.bashrc
-                    source activate postgres
-                    DB_DIR=$(mktemp -d -t postgres.XXX)
-                    initdb -D ${DB_DIR}/postgres
-                    pg_ctl -D ${DB_DIR}/postgres -l ${DB_DIR}/logfile start
-                    sleep 5
-                    createuser --no-password --superuser postgres
+                    su - devuser -c 'conda activate postgres && initdb -D /tmp/postgres && pg_ctl -D /tmp/postgres -l /tmp/logfile start'
+                    su - devuser -c 'conda activate postgres && createuser --no-password --superuser postgres'
                     # createdb --owner=postgres postgres
-                    echo "GRANT CONNECT ON DATABASE postgres TO postgres;" | psql postgres
+                    su - devuser -c 'conda activate postgres && echo "GRANT CONNECT ON DATABASE postgres TO postgres;" | psql postgres'
 
 				'''
             }
