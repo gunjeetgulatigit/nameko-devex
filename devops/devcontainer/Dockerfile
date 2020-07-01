@@ -7,7 +7,7 @@ USER root
 # Install the latest Docker CE binaries (if needed)
 RUN apt-get update && \
     apt-get -y --no-install-recommends install apt-transport-https \
-      build-essential jq net-tools \
+      build-essential jq net-tools sudo netcat \
       ca-certificates \
       curl \
       gnupg2 \
