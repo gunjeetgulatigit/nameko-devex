@@ -74,10 +74,18 @@ pipeline {
             }
         }
 
-        stage('Smoketest') {
+        stage('Unit Test'){
             steps {
 				sh '''#!/bin/bash
-                    // conda env create -f environment_dev.yml
+                    source activate namekoexample
+                    ./dev_pytest.sh
+				'''
+            }
+        }
+
+        stage('Smoke Test') {
+            steps {
+				sh '''#!/bin/bash
                     source activate namekoexample
                     echo "Start app service ..."
                     ./dev_run.sh gateway.service orders.service products.service > app.log &
