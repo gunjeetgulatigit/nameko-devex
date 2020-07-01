@@ -16,13 +16,13 @@ pipeline {
             description: '''
                 Using PCF Cloudfoundry
             ''')
-        string(name: 'CF_ORG', defaultValue: 'Demo',
+        string(name: 'CF_ORG', defaultValue: 'SANNV',
             description: '''
                 Using PCF Cloudfoundry
             ''')
-        string(name: 'CF_SPACE', defaultValue: 'Development', description: 'CF space. eg: jenkins ?')
+        string(name: 'CF_SPACE', defaultValue: 'development', description: 'CF space. eg: jenkins ?')
         string(name: 'PREFIX', defaultValue: '', description: 'usually same as CF_SPACE. Empty = Dynamic generation')
-        string(name: 'CF_CRED_ID', defaultValue: 'xxxx', description: 'get it from jenkins credentials')
+        string(name: 'CF_CRED_ID', defaultValue: '62f9ef52-e601-4543-a0db-f5eda2210c31', description: 'get it from jenkins credentials')
         string(name: 'NUM_USERS', defaultValue: '20', description: 'Total number of concurrent users')
         string(name: 'HOLD_HOURS', defaultValue: '0.5',  description: 'Total amount of time to execute the tests')
     }
@@ -74,7 +74,7 @@ pipeline {
             }
         }
 
-        stage('Unit Test'){
+        stage('Unit Test') {
             steps {
 				sh '''#!/bin/bash
                     source activate namekoexample
@@ -95,7 +95,39 @@ pipeline {
 				'''
             }
         }
+
+        stage('Deploy + Test') {
+            stages {
+                stage('Deploy') {
+                    when {
+                        anyOf {
+                                expression{ env.BRANCH_NAME =~ 'dockerTest0' }
+                                branch 'performance'
+                                branch 'master'
+                        }
+                    }
+
+                    steps {
+					    // cf login and undeploy
+                        withCredentials([[$class: 'UsernamePasswordMultiBinding',
+                            credentialsId: "${params.CF_CRED_ID}",
+                            usernameVariable: 'CF_USR', passwordVariable: 'CF_PWD']]){
+
+                                sh '''#!/bin/bash
+                                    set -e
+                                    echo "Deploy: CF Login into org:${CF_ORG}, space:${CF_SPACE}"
+                                    cf login -u ${CF_USR} -p ${CF_PWD} -a ${CF_URL} -o ${CF_ORG} -s ${CF_SPACE}
+                                    source activate namekoexample
+                                    echo "Deploy: nex-deploy.sh ${PREFIX}"
+                                    ./devops/next-deploy.sh ${PREFIX}
+                                '''
+                        }
+                    }
+                }
+            }
+        }
     }
+
     post {
 		always {
 			// script {
