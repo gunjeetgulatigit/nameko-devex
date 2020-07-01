@@ -97,7 +97,9 @@ pipeline {
         }
 
         stage('Deploy + Test') {
+
             stages {
+
                 stage('Deploy') {
                     when {
                         anyOf {
@@ -108,6 +110,11 @@ pipeline {
                     }
 
                     steps {
+                        script {
+                            if (!params.PREFIX?.trim()) {
+                                env.PREFIX = sh(returnStdout: true, script: 'echo ${BUILD_TAG} | md5sum | cut -c -10').trim()
+					        }
+                        }
 					    // cf login and undeploy
                         withCredentials([[$class: 'UsernamePasswordMultiBinding',
                             credentialsId: "${params.CF_CRED_ID}",
@@ -119,7 +126,7 @@ pipeline {
                                     cf login -u ${CF_USR} -p ${CF_PWD} -a ${CF_URL} -o ${CF_ORG} -s ${CF_SPACE}
                                     source activate namekoexample
                                     echo "Deploy: nex-deploy.sh ${PREFIX}"
-                                    ./devops/next-deploy.sh ${PREFIX}
+                                    ./devops/nex-deploy.sh ${PREFIX}
                                 '''
                         }
                     }
