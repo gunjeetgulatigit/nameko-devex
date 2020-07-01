@@ -32,48 +32,58 @@ pipeline {
 	}
 
     stages {
+        stage('Prepare Dev Env') {
+            parallel {
+                stage('Create Dev Conda Env'){
+                    steps {
+                        sh '''#!/bin/bash
+                            conda env create -f environment_dev.yml
+                        '''
+                    }                    
+                }
+                stage('Start Local BackServices') {
+                    steps {
+                        sh '''#!/bin/bash
+                            echo "Starting RabbitMQ Service"
+                            source activate rabbitmq
+                            rabbitmq-server -detached
+                            sleep 30
+                            rabbitmq-plugins enable rabbitmq_management
+                            rabbitmqctl add_user "rabbit" "rabbit"
+                            rabbitmqctl set_user_tags rabbit administrator
+                            rabbitmqctl set_permissions --vhost '/' 'rabbit' '.' '.' '.' 
 
-        stage('Start Local BackServices') {
-            steps {
-				sh '''#!/bin/bash
-                    echo "Starting RabbitMQ Service"
-                    source activate rabbitmq
-                    rabbitmq-server -detached
-                    sleep 30
-                    rabbitmq-plugins enable rabbitmq_management
-                    rabbitmqctl add_user "rabbit" "rabbit"
-                    rabbitmqctl set_user_tags rabbit administrator
-                    rabbitmqctl set_permissions --vhost '/' 'rabbit' '.' '.' '.' 
+                            echo "Starting Redis Service"
+                            source activate redis
+                            # get config file for version 5
+                            curl -s https://raw.githubusercontent.com/antirez/redis/5.0/redis.conf > ./redis.conf
+                            redis-server ./redis.conf  --daemonize yes
+                            sleep 5
+                            echo 'CONFIG Set "requirePass" ""' | redis-cli
 
-                    echo "Starting Redis Service"
-                    source activate redis
-                    # get config file for version 5
-                    curl -s https://raw.githubusercontent.com/antirez/redis/5.0/redis.conf > ./redis.conf
-                    redis-server ./redis.conf  --daemonize yes
-                    sleep 5
-                    echo 'CONFIG Set "requirePass" ""' | redis-cli
+                            echo "Starting Postgres Service"
+                            su - devuser -c 'conda activate postgres && initdb -D /tmp/postgres && pg_ctl -D /tmp/postgres -l /tmp/logfile start'
+                            su - devuser -c 'conda activate postgres && createuser --no-password --superuser postgres'
+                            # createdb --owner=postgres postgres
+                            su - devuser -c 'conda activate postgres && echo "GRANT CONNECT ON DATABASE postgres TO postgres;" | psql postgres'
 
-                    echo "Starting Postgres Service"
-                    su - devuser -c 'conda activate postgres && initdb -D /tmp/postgres && pg_ctl -D /tmp/postgres -l /tmp/logfile start'
-                    su - devuser -c 'conda activate postgres && createuser --no-password --superuser postgres'
-                    # createdb --owner=postgres postgres
-                    su - devuser -c 'conda activate postgres && echo "GRANT CONNECT ON DATABASE postgres TO postgres;" | psql postgres'
+                        '''
+                    }
+                }
 
-				'''
             }
         }
 
         stage('Smoketest') {
             steps {
 				sh '''#!/bin/bash
-                    conda env create -f environment_dev.yml
+                    // conda env create -f environment_dev.yml
                     source activate namekoexample
                     echo "Start app service ..."
                     ./dev_run.sh gateway.service orders.service products.service > app.log &
                     sleep 5
                     echo "Start smoketest ..."
                     ./devops/nex-smoketest.sh local
-
 				'''
             }
         }
