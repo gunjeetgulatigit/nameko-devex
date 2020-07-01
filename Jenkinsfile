@@ -66,9 +66,10 @@ pipeline {
         stage('Smoketest') {
             steps {
 				sh '''#!/bin/bash
-                    whoami
-                    pwd
-                    conda env list
+                    conda env create -f environment_dev.yml
+                    source activate namekoexample
+                    ./dev_run.sh gateway.service orders.service products.service &
+
                     netstat -an
                     exit 0
 					// git clone https://github.com/gitricko/nameko-examples
