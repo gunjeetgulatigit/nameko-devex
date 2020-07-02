@@ -35,6 +35,11 @@ pipeline {
         stage('Prepare Dev Env') {
             parallel {
                 stage('Create Dev Conda Env'){
+                    script {
+                        if (!params.PREFIX?.trim()) {
+                            env.PREFIX = sh(returnStdout: true, script: 'echo ${BUILD_TAG} | md5sum | cut -c -10').trim()
+                        }
+                    }                    
                     steps {
                         sh '''#!/bin/bash
                             conda env create -f environment_dev.yml
@@ -118,11 +123,6 @@ pipeline {
                     // }
 
                     steps {
-                        script {
-                            if (!params.PREFIX?.trim()) {
-                                env.PREFIX = sh(returnStdout: true, script: 'echo ${BUILD_TAG} | md5sum | cut -c -10').trim()
-					        }
-                        }
 					    // cf login and undeploy
                         withCredentials([[$class: 'UsernamePasswordMultiBinding',
                             credentialsId: "${params.CF_CRED_ID}",
