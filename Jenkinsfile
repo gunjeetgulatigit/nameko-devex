@@ -20,7 +20,7 @@ pipeline {
             description: '''
                 Using PCF Cloudfoundry
             ''')
-        string(name: 'CF_SPACE', defaultValue: 'test', description: 'CF space. eg: jenkins ?')
+        string(name: 'CF_SPACE', defaultValue: 'development', description: 'CF space. eg: jenkins ?')
         string(name: 'PREFIX', defaultValue: '', description: 'usually same as CF_SPACE. Empty = Dynamic generation')
         string(name: 'CF_CRED_ID', defaultValue: '62f9ef52-e601-4543-a0db-f5eda2210c31', description: 'get it from jenkins credentials')
         string(name: 'NUM_USERS', defaultValue: '20', description: 'Total number of concurrent users')
@@ -121,10 +121,10 @@ pipeline {
                             usernameVariable: 'CF_USR', passwordVariable: 'CF_PWD']]){
 
                                 sh '''#!/bin/bash
-                                    set -e
                                     echo "Deploy: CF Login into org:${CF_ORG}, space:${CF_SPACE}"
                                     cf login -u ${CF_USR} -p ${CF_PWD} -a ${CF_URL} -o ${CF_ORG} -s ${CF_SPACE}
                                     source activate namekoexample
+                                    set -e
                                     echo "Deploy: nex-deploy.sh ${PREFIX}"
                                     ./devops/nex-deploy.sh ${PREFIX}
                                 '''
