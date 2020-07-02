@@ -2,24 +2,26 @@ pipeline {
     agent any
 
     stages {
-        parallel {
-            stage('Docker Build DevContainer') {
-                steps {
-                    echo 'Starting to build docker image'
-                    script {
-                        def dev_image = docker.build("devcontainer:latest", "-f devops/devcontainer/Dockerfile .")
+        stage('Docker Build') {
+            parallel {
+                stage('Docker Build DevContainer') {
+                    steps {
+                        echo 'Starting to build docker image'
+                        script {
+                            def dev_image = docker.build("devcontainer:latest", "-f devops/devcontainer/Dockerfile .")
+                        }
                     }
                 }
-            }
 
-            stage('Docker Build DevJenkins') {
-                steps {
-                    echo 'Starting to build docker image'
-                    script {
-                        def dev_image = docker.build("devjenkins:latest", "-f devops/jenkins/Dockerfile .")
+                stage('Docker Build DevJenkins') {
+                    steps {
+                        echo 'Starting to build docker image'
+                        script {
+                            def dev_image = docker.build("devjenkins:latest", "-f devops/jenkins/Dockerfile .")
+                        }
                     }
-                }
-            }  
+                }  
+            }
         }      
     }
     post {
