@@ -136,11 +136,8 @@ pipeline {
                     steps {
                         sh '''#!/bin/bash
                             source activate namekoexample
-                            echo "Start app service ..."
-                            ./dev_run.sh gateway.service orders.service products.service > app.log &
-                            sleep 5
                             echo "Start smoketest ..."
-                            ./devops/nex-smoketest.sh local
+                            ./devops/nex-smoketest.sh ${PREFIX}-namekoexample.cfapps.io
                         '''
                     }
                 }                
