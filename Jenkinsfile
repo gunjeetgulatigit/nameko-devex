@@ -98,16 +98,24 @@ pipeline {
 
         stage('Deploy + Test') {
 
+            when {
+                anyOf {
+                        expression{ env.BRANCH_NAME =~ 'PR-' }
+                        branch 'performance'
+                        branch 'master'
+                }
+            }
+
             stages {
 
                 stage('Deploy') {
-                    when {
-                        anyOf {
-                                expression{ env.BRANCH_NAME =~ 'dockerTest0' }
-                                branch 'performance'
-                                branch 'master'
-                        }
-                    }
+                    // when {
+                    //     anyOf {
+                    //             expression{ env.BRANCH_NAME =~ 'PR-' }
+                    //             branch 'performance'
+                    //             branch 'master'
+                    //     }
+                    // }
 
                     steps {
                         script {
