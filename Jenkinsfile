@@ -151,7 +151,7 @@ pipeline {
 				// undeploy first
 				sh '''
 					echo "post: Undeploy landscape: ${PREFIX}"
-					./devops/nex-undeploy.sh -f ${PREFIX}
+					./devops/nex-undeploy.sh ${PREFIX}
 				'''
 			}
 			archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.log', fingerprint: true
