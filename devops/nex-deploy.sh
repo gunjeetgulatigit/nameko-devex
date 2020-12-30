@@ -36,9 +36,14 @@ echo "Using prefix: $PREFIX"
 
 if [ -z "$PRODPLAN" ]; then
   echo "Using development plan for backing services"
-  PLAN_RABBIT=lemur
-  PLAN_POSTGRES=turtle
-  PLAN_REDIS=30mb
+  RABBIT_SVCE=rabbitmqondocker
+  RABBIT_PLAN=v3.3
+
+  POSTGRES_SVCE=postgresqlondocker
+  POSTGRES_PLAN=v9.6
+
+  REDIS_SVCE=redisondocker
+  REDIS_PLAN=v3.2
 else
   echo "Using production plan for backing services. Not Impl yet"
   PLAN_RABBIT=xxx
@@ -48,9 +53,9 @@ fi
 
 # Creating Backing services (may fail if it is already there)
 echo "Creating backing service for ${PREFIX}-namekoexample"
-cf cs cloudamqp ${PLAN_RABBIT} ${PREFIX}-rabbitmq &
-cf cs elephantsql ${PLAN_POSTGRES} ${PREFIX}-postgres &
-cf cs rediscloud ${PLAN_REDIS} ${PREFIX}-redis &
+cf cs ${RABBIT_SVCE} ${RABBIT_PLAN} ${PREFIX}-rabbitmq &
+cf cs ${POSTGRES_SVCE} ${POSTGRES_PLAN} ${PREFIX}-postgres &
+cf cs ${REDIS_SVCE} ${REDIS_PLAN} ${PREFIX}-redis &
 wait
 
 # Deploying App(s) in CF

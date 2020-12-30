@@ -1,8 +1,8 @@
 ---
 defaults: &defaults
   buildpacks:
-    - python_buildpack
-  memory: 256M
+    - https://github.com/cloudfoundry/python-buildpack#v1.7.17
+  memory: 2G
   disk_quota: 4G
   health-check-type: process
   no-route: true

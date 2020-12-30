@@ -15,6 +15,10 @@ Buying and selling quality airships since 2012
 
 ### Setting up environment
 
+* Install jq
+```ssh
+$ brew install jq
+```
 * Create conda environment
 ```ssh
 $ conda env create -f environment_dev.yml

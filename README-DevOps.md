@@ -7,6 +7,9 @@ Buying and selling quality airships since 2012
 ## Prerequisites deployment to Cloudfoundry / Tanzu
 
 * [CF cli](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html#pkg)
+```ssh
+$ brew install cloudfoundry/tap/cf-cli
+```
 * Get CloudFoundry Landscape:
     - [**Pivotal/VMWare Tanzu**](https://account.run.pivotal.io/z/uaa/sign-up)
     - [IBM Bluemix](https://cloud.ibm.com/registration)
