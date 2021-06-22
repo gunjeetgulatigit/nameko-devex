@@ -1,5 +1,5 @@
 replicaCount: 1
 image:
-  tag: latest
+  tag: dev
 ingressPort: 80
 servicePort: 8000

@@ -57,6 +57,14 @@ $ helm version --kube-context=docker-desktop
 version.BuildInfo{Version:"v3.0.0", GitCommit:"e29...8b6", GitTreeState:"clean", GoVersion:"go1.13.4"}
 ```
 
+### Add stable repository in Helm
+
+```sh
+$ helm repo add stable https://charts.helm.sh/stable
+$	helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+```
+
 ### Deploy RabbitMQ, PostgreSQL and Redis
 
 Run these commands one by one:
