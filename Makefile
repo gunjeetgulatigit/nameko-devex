@@ -23,6 +23,13 @@ test:
 
 coverage: test coverage-report coverage-html
 
+# test
+smoke-test:
+	./test/nex-smoketest.sh http://localhost:8003
+
+perf-test:
+	./test/nex-bzt.sh http://localhost:8003
+
 # docker
 
 build-base:
@@ -31,6 +38,9 @@ build-base:
 
 build: build-base
 	for image in $(IMAGES) ; do TAG=$(TAG) make -C $$image build-image; done
+
+deploy-docker: build-base
+	docker compose up
 
 docker-save:
 	mkdir -p docker-images

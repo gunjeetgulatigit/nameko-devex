@@ -1,10 +1,24 @@
-# Nameko Examples
+# Deploying nameko-devex
 ![Airship Ltd](airship.png)
-## Airship Ltd
-Buying and selling quality airships since 2012
 
+## Docker
+### Prerequisites deployment to Docker
+* [docker-for-desktop](https://docs.docker.com/docker-for-mac/) with Kubernetes enabled. 
+* Docker cli is working. eg: `docker compose`
 
-## Prerequisites deployment to Cloudfoundry / Tanzu
+### Setup
+* Deploy nameko microservice in docker
+```sh
+make deploy-docker
+```
+* Smoketest your landscape via `make smoke-test`, make sure you are in your _namekoexample_ conda environment 
+* You could also performance test your landscape via `make perf-test`
+* To undeploy/stop, Control-C above process
+
+Please read the [Makefile](Makefile) for more details on the commands
+
+## Cloudfoundry / Tanzu
+### Prerequisites deployment to CloudFoundry
 
 * [CF cli](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html#pkg)
 ```ssh
@@ -21,7 +35,7 @@ $ brew install cloudfoundry/tap/cf-cli
 * or install your own via Terraform
     - [AWS](https://docs.pivotal.io/platform/ops-manager/2-9/aws/prepare-env-terraform.html)
     - In the above same link, you see scripts for Google and Azure
-## Setup
+### Setup
 For below instruction, we are assuming you have created a free CF acount from [Pivotal](https://account.run.pivotal.io/z/uaa/). We are using their free backing service from there.
 
 * Login into CF account. Read quick [tutorial](https://docs.cloudfoundry.org/cf-cli/getting-started.html#login)
@@ -56,5 +70,5 @@ For multiple app deployment, uncomment appropriately in `manifest.yml`
 (namekoexample) test/nex-smoketest.sh <cf_url>
 ```
 
-## CI/CD
+### CI/CD
 Using Cloudfoundry CLI is so straightforward that creating automation for development in dev or production environment is trivial from developer point of view

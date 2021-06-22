@@ -30,7 +30,7 @@ get-pods:
 	kubectl --context=$(CONTEXT) --namespace $(NAMESPACE) get pods
 
 get-logs:
-	kubectl --context=$(CONTEXT) --namespace $(NAMESPACE) logs -f $(NAME)
+	kubectl get pods --context=$(CONTEXT) --namespace $(NAMESPACE) --no-headers=true | awk '{print $$1}' | grep $(NAME) | xargs kubectl --context=$(CONTEXT) --namespace $(NAMESPACE) logs -f
 
 create-namespace:
 	kubectl --context=$(CONTEXT) apply -f namespace.yaml
@@ -62,9 +62,10 @@ deploy-ingress:
 	helm upgrade ingress-nginx ingress-nginx/ingress-nginx --install
 
 undeploy-ingress:
-	kubectl get pods --namespace default --no-headers=true | awk '{print $$1}' | xargs kubectl --namespace default delete pod
+	kubectl get pods --namespace default --no-headers=true | awk '{print $$1}' | grep ingress-nginx | xargs kubectl --namespace default delete pod
 
 install-charts:
+	cd ..; $(MAKE) build
 	$(MAKE) SERVICE_NAME=gateway install-chart
 	$(MAKE) SERVICE_NAME=orders install-chart
 	$(MAKE) SERVICE_NAME=products install-chart
