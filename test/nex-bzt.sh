@@ -4,7 +4,7 @@
 # ensure prefix is pass in
 if [ $# -lt 1 ] ; then
 	echo "nex-bzt.sh needs prefix"
-	echo "eg: nex-bzt.sh local|app-name"
+	echo "eg: nex-bzt.sh local|url"
     echo "eg: nex-bzt.sh local numOfuser hold_time ramp_up"
     echo "eg: nex-bzt.sh local 10 2h 3m"
     echo "      means 10 users, run for 2 hours and use 3 min to ramp up"
@@ -15,7 +15,7 @@ PREFIX=$1
 
 if [ "${PREFIX}" != "local" ]; then
     echo "Production Performance Test in CF"
-    STD_APP_URL=https://${PREFIX}
+    STD_APP_URL=${PREFIX}
 else
     echo "Local Performance Test"
     STD_APP_URL=http://localhost:8000

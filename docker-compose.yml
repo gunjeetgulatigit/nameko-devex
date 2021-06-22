@@ -34,7 +34,7 @@ services:
 
   orders:
     container_name: nameko-example-orders
-    image: nameko/nameko-example-orders:latest
+    image: nameko/nameko-example-orders:dev
     depends_on:
       - rabbit
       - postgres
@@ -48,6 +48,7 @@ services:
         DB_USER: "postgres"
         DB_HOST: "postgres"
         DB_NAME: "orders"
+        POSTGRES_URI: postgresql://postgres:password@postgres:5432/orders
         RABBIT_PASSWORD: "guest"
         RABBIT_USER: "guest"
         RABBIT_HOST: "rabbit"
@@ -56,7 +57,7 @@ services:
 
   products:
     container_name: nameko-example-products
-    image: nameko/nameko-example-products:latest
+    image: nameko/nameko-example-products:dev
     depends_on:
       - rabbit
       - redis
@@ -78,7 +79,7 @@ services:
 
   gateway:
     container_name: nameko-example-gateway
-    image: nameko/nameko-example-gateway:latest
+    image: nameko/nameko-example-gateway:dev
     depends_on:
       - rabbit
     ports:

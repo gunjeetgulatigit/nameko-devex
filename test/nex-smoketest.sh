@@ -17,21 +17,14 @@ fi
 PREFIX=$1
 
 # check if doing local smoke test
-if [ "${PREFIX}" = "local" ] ; then
-  	LOCAL_DEV=1
+if [ "${PREFIX}" != "local" ]; then
+    echo "Production Performance Test in CF"
+    STD_APP_URL=${PREFIX}
 else
-	LOCAL_DEV=0
+    echo "Local Performance Test"
+    STD_APP_URL=http://localhost:8000
 fi
 
-# 1. Get App configuration via CF
-if [ "${LOCAL_DEV}" -ne 1 ]; then
-    echo "Server Deployment"
-	STD_APP_URL="https://${PREFIX}"
-
-else
-	STD_APP_URL="http://localhost:8000"
-	echo "Local Development"
-fi
 echo STD_APP_URL=${STD_APP_URL}
 
 # Test: Create Products

@@ -2,6 +2,7 @@ name: namekoexample
 channels:
 - conda-forge
 dependencies:
+- openjdk=8.0
 - python=3.7
 - pip==20.0.2
 - pip:
@@ -12,7 +13,7 @@ dependencies:
     - alembic==1.0.10
     - pylint==2.5.2
     - debugpy==1.0.0b9
-    - bzt==1.14.2
+    - bzt==1.15.3
     - pytest==4.5.0
     - coverage==4.5.3
     - flake8==3.7.7

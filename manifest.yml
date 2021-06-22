@@ -19,7 +19,7 @@ applications:
     <<: *defaults
     no-route: false
     health-check-type: port
-    command: bash ./run.sh gateway.service products.service orders.service
+    command: bash ./cf_run.sh gateway.service products.service orders.service
 
 # Majestic Microservice (need to uncomment above)
 # applications:
@@ -28,18 +28,18 @@ applications:
 #     no-route: false
 #     health-check-type: port
 #     memory: 128M
-#     command: bash ./run.sh gateway.service 
+#     command: bash ./cf_run.sh gateway.service 
 
 #   - name: nex-namekoexample-orders
 #     <<: *defaults
 #     no-route: true
 #     health-check-type: process
 #     memory: 128M
-#     command: bash ./run.sh orders.service
+#     command: bash ./cf_run.sh orders.service
 
 #   - name: nex-namekoexample-products
 #     <<: *defaults
 #     no-route: true
 #     health-check-type: process
 #     memory: 128M
-#     command: bash ./run.sh products.service
+#     command: bash ./cf_run.sh products.service

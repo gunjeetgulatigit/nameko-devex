@@ -53,7 +53,7 @@ For multiple app deployment, uncomment appropriately in `manifest.yml`
 
 * Verifying app works in CF
 ```ssh
-(namekoexample) test/nex-smoketest.sh <prefix>
+(namekoexample) test/nex-smoketest.sh <cf_url>
 ```
 
 ## CI/CD

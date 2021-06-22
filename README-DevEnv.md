@@ -51,7 +51,7 @@ $ conda deactivate namekoexample
 
 * Quick `Smoke Test` to ensure the setup is working properly
 ```ssh
-(namekoexample) ./devops/nex-smoketest.sh local 
+(namekoexample) ./test/nex-smoketest.sh local 
 
 # Example output:
 Local Development
