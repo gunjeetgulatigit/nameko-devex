@@ -3,8 +3,8 @@
 
 ## Docker
 ### Prerequisites deployment to Docker
-* [docker-for-desktop](https://docs.docker.com/docker-for-mac/) with Kubernetes enabled. 
-* Docker cli is working. eg: `docker compose`
+* [Docker](https://docs.docker.com/get-docker/). 
+* Docker cli is working. eg: `docker-compose` - [Install instructions](https://docs.docker.com/compose/install/)
 
 ### Setup
 * Deploy nameko microservice in docker
@@ -17,7 +17,25 @@ make deploy-docker
 
 Please read the [Makefile](Makefile) for more details on the commands
 
-## Cloudfoundry / Tanzu
+## K8S using KinD
+### Prerequisites deployment to K8S
+* Docker (see above)
+* Kubernetes in Docker - [KinD](https://kind.sigs.k8s.io/docs/user/quick-start/#installation)
+
+### Setup
+* Deploy nameko microservice in K8S
+```sh
+cd k8s
+make deployK8
+```
+* Smoketest your landscape via `make smoke-test`, make sure you are in your _namekoexample_ conda environment 
+* You could also performance test your landscape via `make perf-test`
+* To undeploy, use `make undeployK8`
+
+Please read the [Makefile](k8s/Makefile) for more details on the commands
+
+
+## Cloudfoundry
 ### Prerequisites deployment to CloudFoundry
 
 * [CF cli](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html#pkg)
@@ -25,10 +43,11 @@ Please read the [Makefile](Makefile) for more details on the commands
 $ brew install cloudfoundry/tap/cf-cli
 ```
 * Get CloudFoundry Landscape:
-    - [**Pivotal/VMWare Tanzu**](https://account.run.pivotal.io/z/uaa/sign-up)
+    - [Pivotal/VMWare Tanzu](https://account.run.pivotal.io/z/uaa/sign-up)
     - [IBM Bluemix](https://cloud.ibm.com/registration)
     - [SAP Cloud](https://www.sap.com/cmp/td/sap-cloud-platform-trial.html)
 * or Create your own in AWS/Azure:
+    - [**KubeCF in KinD**](https://kubecf.io/docs/tutorials/deploy-kind/)
     - [Tanzu on Azure](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/pivotal.pivotal-cloud-foundry)
     - [Tanzu on Google](https://tanzu.vmware.com/partners/google)
     - [Pivotal Cloud Foundry on AWS](https://aws.amazon.com/quickstart/architecture/pivotal-cloud-foundry/)
@@ -42,12 +61,12 @@ For below instruction, we are assuming you have created a free CF acount from [P
 
 * Activate environment before running deployment script
 ```ssh
-$ conda activate namekoexample
+$ conda activate nameko-devex
 ```
 
 * Deploy to CF
 ```ssh
-(namekoexample) devops/nex-deploy.sh <prefix>
+(nameko-devex) devops/nex-deploy.sh <prefix>
 ```
 If prefix is `demo`, the above command will:
 - Create the following free backing service instances
@@ -62,12 +81,12 @@ For multiple app deployment, uncomment appropriately in `manifest.yml`
 
 * Undeploy apps from CF
 ```ssh
-(namekoexample) devops/nex-undeploy.sh <prefix>
+(nameko-devex) devops/nex-undeploy.sh <prefix>
 ```
 
 * Verifying app works in CF
 ```ssh
-(namekoexample) test/nex-smoketest.sh <cf_url>
+(nameko-devex) test/nex-smoketest.sh <cf_url>
 ```
 
 ### CI/CD

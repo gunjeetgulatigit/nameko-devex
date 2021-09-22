@@ -1,3 +1,4 @@
+PREFIX ?= localdev
 HTMLCOV_DIR ?= htmlcov
 TAG ?= dev
 IMAGES := orders products gateway
@@ -39,9 +40,12 @@ build-base:
 build: build-base
 	for image in $(IMAGES) ; do TAG=$(TAG) make -C $$image build-image; done
 
-deploy-docker: build-base
-	docker compose up
+deploy-docker: build
+	bash -c "trap 'make undeploy-docker' EXIT; PREFIX=${PREFIX} TAG=$(TAG) docker-compose up"
 
+undeploy-docker:
+	PREFIX=$(PREFIX) docker-compose down
+	
 docker-save:
 	mkdir -p docker-images
 	docker save -o docker-images/examples.tar $(foreach image,$(IMAGES),nameko/nameko-example-$(image):$(TAG))

@@ -2,27 +2,36 @@
 
 ![Nameko loves Kubernetes](nameko-k8s.png)
 
-In this example we'll use local Kubernetes cluster installed with [docker-for-desktop](https://docs.docker.com/docker-for-mac/)
- along with community maintained Helm Charts to deploy all 3rd party services. 
- We will also create a set of Helm Charts for Nameko Example Services from this repository.  
+In this example we'll use local Kubernetes cluster installed with [KinD](https://kind.sigs.k8s.io/) along with community maintained Helm Charts to deploy all 3rd party services. We will also create a set of Helm Charts for Nameko Example Services from this repository.
 
-Tested with Kubernetes v1.14.8
+Below describe the manual step-by-step instructions for deploying into K8S. A scripted version of this instructions can be found [here](../README-DevOps.md)
+
+Tested with Kubernetes v1.21.1
 
 ## Prerequisites
 
 Please make sure these are installed and working
 
-* [docker-for-desktop](https://docs.docker.com/docker-for-mac/) with Kubernetes enabled. Docker Desktop for Mac is used in these examples but any other Kubernetes cluster will work as well.
-* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) - should be installed and configured during docker-for-desktop installation
+* [docker-for-desktop](https://docs.docker.com/docker-for-mac/) or Docker engine in Linux. Kubernetes enabled is not needed since we use KinD as a docker container. KinD is used in these examples but any other Kubernetes cluster will work as well.
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) - should be installed and configured
 * [Helm](https://docs.helm.sh/using_helm/#installing-helm)
+
+Create Kubernetes cluster using KinD
+```ssh
+$ export HOST=localhost; export NAMESPACE=nameko; export CONTEXT=kind-${NAMESPACE}
+$ kind create cluster --config kind-config.yaml --name ${NAMESPACE}
+$ kind export kubeconfig --name ${NAMESPACE}
+$ NEWURL=$(kubectl config view | grep -B1 "name: ${CONTEXT}" | grep server: | awk '{print $2}' | sed -e "s/0.0.0.0/${HOST}/")
+$ kubectl config set-cluster ${CONTEXT} --server=${NEWURL} --insecure-skip-tls-verify=true 
+```
 
 Verify our Kubernetes cluster us up and running:
 
 ```sh
-$ kubectl --context=docker-desktop get nodes
+$ kubectl --context=kind-nameko get nodes
 
-NAME             STATUS   ROLES    AGE   VERSION
-docker-desktop   Ready    master   54m   v1.14.8
+NAME                   STATUS   ROLES                  AGE     VERSION
+nameko-control-plane   Ready    control-plane,master   4m10s   v1.21.1
 ```
 
 ## Create Namespace
@@ -39,7 +48,7 @@ metadata:
 ```
 
 ```sh
-$ kubectl --context=docker-desktop apply -f namespace.yaml
+$ kubectl --context=kind-nameko apply -f namespace.yaml
 
 namespace/examples created
 ```
@@ -52,17 +61,9 @@ The fastest way to install these 3rd party dependencies is to use community main
 Let's verify that Helm client is installed
 
 ```sh
-$ helm version --kube-context=docker-desktop
+$ helm version --kube-context=kind-nameko
 
-version.BuildInfo{Version:"v3.0.0", GitCommit:"e29...8b6", GitTreeState:"clean", GoVersion:"go1.13.4"}
-```
-
-### Add stable repository in Helm
-
-```sh
-$ helm repo add stable https://charts.helm.sh/stable
-$	helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-
+version.BuildInfo{Version:"v3.6.1", GitCommit:"61d8e8c4a6f95540c15c6a65f36a6dd0a45e7a2f", GitTreeState:"dirty", GoVersion:"go1.16.5"}
 ```
 
 ### Deploy RabbitMQ, PostgreSQL and Redis
@@ -70,11 +71,11 @@ $	helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 Run these commands one by one:
 
 ```sh
-$ helm --kube-context=docker-desktop install broker  --namespace examples stable/rabbitmq
+$ helm --kube-context=kind-nameko install broker  --namespace nameko stable/rabbitmq
 
-$ helm --kube-context=docker-desktop install db --namespace examples stable/postgresql --set postgresqlDatabase=orders
+$ helm --kube-context=kind-nameko install db --namespace nameko stable/postgresql --set postgresqlDatabase=orders
 
-$ helm --kube-context=docker-desktop install cache  --namespace examples stable/redis
+$ helm --kube-context=kind-nameko install cache  --namespace nameko stable/redis
 ```
 
 RabbitMQ, PostgreSQL and Redis are now installed along with persistent volumes, kubernetes services, config maps and any secrets required a.k.a. `Amazing™`!
@@ -82,13 +83,14 @@ RabbitMQ, PostgreSQL and Redis are now installed along with persistent volumes, 
 Verify all pods are running:
 
 ```sh
-$ kubectl --context=docker-desktop --namespace=examples get pods
+$ kubectl --context=kind-nameko --namespace=nameko get pods
 
-NAME                               READY     STATUS    RESTARTS   AGE
-broker-rabbitmq-0                   1/1       Running   0          49s
-cache-redis-master-0                1/1       Running   0          49s
-cache-redis-slave-79fc9cc57-s52gw   1/1       Running   0          49s
-db-postgresql-0                     1/1       Running   0          49s
+NAME                   READY   STATUS    RESTARTS   AGE
+broker-rabbitmq-0      1/1     Running   0          80s
+cache-redis-master-0   1/1     Running   0          54s
+cache-redis-slave-0    1/1     Running   0          54s
+cache-redis-slave-1    1/1     Running   0          10s
+db-postgresql-0        1/1     Running   0          62s
 ```
 
 ## Deploy Example Services
@@ -189,33 +191,30 @@ As you can see this template is using values coming from `Chart` and `Values` fi
 Please read [The Chart Template Developer’s Guide](https://docs.helm.sh/chart_template_guide/#the-chart-template-developer-s-guide)
 to learn about creating your own charts.
 
-To route traffic to our gateway service we'll be using ingress. For ingress to work `Ingress Controller` has to be enabled on our cluster. Follow instructions form [Ingress Installation docs](https://kubernetes.github.io/ingress-nginx/deploy/):
+To route traffic to our gateway service we'll be using ingress. For ingress to work `Ingress Controller` has to be enabled on our cluster. Follow instructions form [Ingress Installation docs](https://kind.sigs.k8s.io/docs/user/ingress/):
 
 ```sh
-$ kubectl --context=docker-desktop apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
-
-$ kubectl --context=docker-desktop apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+$ kubectl wait --namespace ingress-nginx \
+		--for=condition=ready pod \
+		--selector=app.kubernetes.io/component=controller \
+		--timeout=90s
 ```
 
 Let's deploy our `products` chart:
 
 ```sh
 $ helm upgrade products charts/products --install \
-	--namespace=examples --kube-context=docker-desktop \
-	--set image.tag=latest
+    --namespace=nameko --kube-context=kind-nameko \
+    --set image.tag=latest
 
 Release "products" does not exist. Installing it now.
-NAME:   products
-LAST DEPLOYED: Thu Jan 11 17:08:51 2018
-NAMESPACE: examples
-STATUS: DEPLOYED
-
-RESOURCES:
-==> v1beta2/Deployment
-NAME      DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
-products  1        1        1           0          0s
-
-
+NAME: products
+LAST DEPLOYED: Wed Sep 22 10:46:05 2021
+NAMESPACE: nameko
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
 NOTES:
 Thank you for installing Products Service!
 ```
@@ -226,15 +225,15 @@ Let's release `orders` and `gateway` services:
 
 ```sh
 $ helm upgrade orders charts/orders --install \
-	--namespace=examples --kube-context=docker-desktop \
-	--set image.tag=latest
+    --namespace=nameko --kube-context=kind-nameko \
+    --set image.tag=latest
 
 Release "orders" does not exist. Installing it now.
 (...)
 
 $ helm upgrade gateway charts/gateway --install \
-	--namespace=examples --kube-context=docker-desktop \
-	--set image.tag=latest
+    --namespace=nameko --kube-context=kind-nameko \
+    --set image.tag=latest
 
 Release "gateway" does not exist. Installing it now.
 (...)
@@ -243,7 +242,7 @@ Release "gateway" does not exist. Installing it now.
 Let's list all of our Helm releases:
 
 ```sh
-$ helm --kube-context=docker-desktop list --namespace examples
+$ helm --kube-context=kind-nameko list --namespace nameko
 
 NAME    	REVISION	UPDATED                 	STATUS  	CHART
 broker  	1       	Tue Oct 29 06:50:26 2019	DEPLOYED	rabbitmq-4.11.1
@@ -257,16 +256,17 @@ products	1       	Tue Oct 29 06:53:43 2019	DEPLOYED	products-0.1.0
 And again let's verify pods are happily running:
 
 ```sh
-$ kubectl --context=docker-desktop --namespace=examples get pods
+$ kubectl --context=kind-nameko --namespace=nameko get pods
 
-NAME                                 READY   STATUS    RESTARTS   AGE
-broker-rabbitmq-0                    1/1     Running   0          6m30s
-cache-redis-master-0                 1/1     Running   0          6m13s
-cache-redis-slave-0                  1/1     Running   0          6m13s
-db-postgresql-0                      1/1     Running   0          6m20s
-gateway-65d67f5dd4-kfbxq             1/1     Running   0          2m47s
-orders-5c6d788d79-d4f8c              1/1     Running   0          2m55s
-products-55bbcf7894-ff5lz            1/1     Running   0          3m13s
+NAME                        READY   STATUS    RESTARTS   AGE
+broker-rabbitmq-0           1/1     Running   0          9m48s
+cache-redis-master-0        1/1     Running   0          9m22s
+cache-redis-slave-0         1/1     Running   0          9m22s
+cache-redis-slave-1         1/1     Running   0          8m38s
+db-postgresql-0             1/1     Running   0          9m30s
+gateway-559b479fc6-8sdb9    1/1     Running   0          2m19s
+orders-5b8cfd54b7-s6pm6     1/1     Running   0          2m26s
+products-6f979cb8fb-d6w94   1/1     Running   0          3m52s
 ```
 
 ## Run examples

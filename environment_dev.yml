@@ -1,4 +1,4 @@
-name: namekoexample
+name: nameko-devex
 channels:
 - conda-forge
 dependencies:

@@ -25,33 +25,33 @@ $ conda env create -f environment_dev.yml
 ```
 * To activate environment ()
 ```ssh
-$ conda activate namekoexample
+$ conda activate nameko-devex
 
 // all commands after activation will have the right binaries references. You must always be in this environment to run and debug this project
 ```
 
 * To deactivate environment
 ```ssh
-$ conda deactivate namekoexample
+$ conda deactivate nameko-devex
 
 ```
 ### Start services locally
-* Activate conda environment using `conda activate namekoexample`
+* Activate conda environment using `conda activate nameko-devex`
 * Start backing services as docker containers
 ```ssh
-(namekoexample) ./dev_run_backingsvcs.sh
+(nameko-devex) ./dev_run_backingsvcs.sh
 
 // This will run rabbitmq, postgres and redis
 ```
 
 * Start nameko services in one process (gateway, orders and products)
 ```ssh
-(namekoexample) ./dev_run.sh gateway.service orders.service products.service
+(nameko-devex) ./dev_run.sh gateway.service orders.service products.service
 ```
 
 * Quick `Smoke Test` to ensure the setup is working properly
 ```ssh
-(namekoexample) ./test/nex-smoketest.sh local 
+(nameko-devex) ./test/nex-smoketest.sh local 
 
 # Example output:
 Local Development
@@ -92,7 +92,7 @@ STD_APP_URL=http://localhost:8000
 
 * Unit Test
 ```ssh
-(namekoexample) ./dev_pytest.sh
+(nameko-devex) ./dev_pytest.sh
 ```
 
 ## Debugging via VSCode IDE
@@ -100,7 +100,7 @@ STD_APP_URL=http://localhost:8000
 * Start nameko services in debugging mode
 
 ```ssh
-(namekoexample) DEBUG=1 ./dev_run.sh gateway.service orders.service products.service
+(nameko-devex) DEBUG=1 ./dev_run.sh gateway.service orders.service products.service
 
 // Same output
 Connection to localhost port 15672 [tcp/*] succeeded!
@@ -121,12 +121,12 @@ nameko service in debug mode. please connect to port 5678 to start service
 * Start nameko services
 * Start performance script
 ```ssh
-(namekoexample) ./test/nex-bzt.sh local
+(nameko-devex) ./test/nex-bzt.sh local
 
 // This will run by default 3 users, for 3 minutes with 1 minute ramp-up time
 ```
 ![PerfTest](test/perftest.png)
 
-## Deployment to CloudFoundry / (similar to Heruku)
+## Deployment to Docker/K8S/CloudFoundry
 
 Please refer to [README-DevOps.md](README-DevOps.md)

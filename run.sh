@@ -3,7 +3,7 @@
 # at least 1 argument to be pass in
 if  [ $# == 0 ]; then
     echo "run.sh needs a service module package to run"
-    echo "eg: run.sh gate.service orders.service products.service"
+    echo "eg: run.sh gateway.service orders.service products.service"
     exit 1
 fi
 
