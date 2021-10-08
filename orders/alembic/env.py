@@ -28,7 +28,7 @@ target_metadata = DeclarativeBase.metadata
 
 
 def get_url():
-    print("---" + os.getenv("POSTGRES_URI"))
+    # print("---" + os.getenv("POSTGRES_URI"))
     return (
         os.getenv("POSTGRES_URI")
     )

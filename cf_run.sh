@@ -3,12 +3,23 @@
 # setting up cf environment
 echo "Using Production Environment Variables in CF.."
 
-AMQP_URI=$(echo ${VCAP_SERVICES} | jq -r '.cloudamqp[0].credentials.uri')
-POSTGRES_URI=$(echo ${VCAP_SERVICES} | jq -r '.elephantsql[0].credentials.uri')
+export AMQP_URI=$(echo ${VCAP_SERVICES} | jq -r '.rabbitmq[0].credentials.uri')
+export POSTGRES_URI=$(echo ${VCAP_SERVICES} | jq -r '.postgresql[0].credentials.uri')/devex
+export REDIS_URI=$(echo ${VCAP_SERVICES} | jq -r '.redis[0].credentials.uri')
 
-REDIS_HOST=$(echo ${VCAP_SERVICES} | jq -r '.rediscloud[0].credentials.hostname')
-REDIS_PORT=$(echo ${VCAP_SERVICES} | jq -r '.rediscloud[0].credentials.port')
-REDIS_PWD=$(echo ${VCAP_SERVICES} | jq -r '.rediscloud[0].credentials.password')
-REDIS_URI=redis://:${REDIS_PWD}@${REDIS_HOST}:${REDIS_PORT}
+# create dbname for postgres
+
+python -c """
+import psycopg2 as db
+from urllib.parse import urlparse
+result = urlparse('${POSTGRES_URI}')
+username = result.username
+password = result.password
+database = result.path[1:]
+hostname = result.hostname
+port = result.port
+con=db.connect(dbname='postgres',host=hostname,user=username,password=password)
+con.autocommit=True;con.cursor().execute('CREATE DATABASE devex')
+"""
 
 ./run.sh $@ 

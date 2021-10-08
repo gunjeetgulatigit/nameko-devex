@@ -3,6 +3,10 @@ HTMLCOV_DIR ?= htmlcov
 TAG ?= dev
 IMAGES := orders products gateway
 
+CF_ORG ?= good
+CF_SPACE ?= morning
+CF_APP ?= nameko-devex
+
 install-dependencies:
 	pip install -U -e "orders/.[dev]"
 	pip install -U -e "products/.[dev]"
@@ -61,3 +65,69 @@ docker-login:
 
 push-images:
 	for image in $(IMAGES) ; do make -C $$image push-image; done
+
+# cf
+cf_target:
+	cf target -o $(CF_ORG) -s $(CF_SPACE)
+
+cf_cs_postgres:
+	cf cs postgresql 11-7-0 $(CF_APP)_postgres
+	echo "Waiting for service to be created"
+	for i in $$(seq 1 90); do \
+		cf service $(CF_APP)_postgres | grep  "create succeeded" 2> /dev/null && break; \
+			sleep 1; \
+	done 
+
+cf_ds_postgres:
+	cf ds $(CF_APP)_postgres -f
+	echo "Waiting for service to be deleted"
+	for i in $$(seq 1 90); do \
+		cf service $(CF_APP)_postgres | grep  "delete in progress" 2> /dev/null || break; \
+			sleep 1; \
+	done 
+
+cf_cs_rabbitmq:
+	cf cs rabbitmq 3-8-1 $(CF_APP)_rabbitmq
+	echo "Waiting for service to be created"
+	for i in $$(seq 1 90); do \
+		cf service $(CF_APP)_rabbitmq | grep  "create succeeded" 2> /dev/null && break; \
+			sleep 1; \
+	done 
+
+cf_ds_rabbitmq:
+	cf ds $(CF_APP)_rabbitmq -f
+	echo "Waiting for service to be deleted"
+	for i in $$(seq 1 90); do \
+		cf service $(CF_APP)_rabbitmq | grep  "delete in progress" 2> /dev/null || break; \
+			sleep 1; \
+	done 
+
+cf_cs_redis:
+	cf cs redis 5-0-7 $(CF_APP)_redis
+	echo "Waiting for service to be created"
+	for i in $$(seq 1 90); do \
+		cf service $(CF_APP)_redis | grep  "create succeeded" 2> /dev/null && break; \
+			sleep 1; \
+	done 
+
+cf_ds_redis:
+	cf ds $(CF_APP)_redis -f
+	echo "Waiting for service to be deleted"
+	for i in $$(seq 1 90); do \
+		cf service $(CF_APP)_redis | grep  "delete in progress" 2> /dev/null || break; \
+			sleep 1; \
+	done 
+
+deployCF: cf_target cf_cs_postgres cf_cs_rabbitmq cf_cs_redis
+	cf delete $(CF_APP) -f
+	cf push $(CF_APP) --no-start
+	cf bind-service $(CF_APP) $(CF_APP)_postgres
+	cf bind-service $(CF_APP) $(CF_APP)_rabbitmq
+	cf bind-service $(CF_APP) $(CF_APP)_redis
+	cf start $(CF_APP)
+
+undeployCF: cf_target 
+	cf delete $(CF_APP) -f 
+	$(MAKE) cf_ds_postgres
+	$(MAKE) cf_ds_rabbitmq
+	$(MAKE) cf_ds_redis
