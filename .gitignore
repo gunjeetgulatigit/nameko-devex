@@ -1,6 +1,7 @@
 *.egg-info
 .cache
 *.pyc
+**/__pycache__
 htmlcov
 .coverage
 */wheelhouse

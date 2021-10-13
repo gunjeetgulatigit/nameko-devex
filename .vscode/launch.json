@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: FastAPI",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "gateapi.main:app"
+            ],
+            "jinja": true,
+            "cwd": "${workspaceFolder}/gateapi"
+        },
+        {
             "name": "Python Debug: Connect",
             "type": "python",
             "request": "attach",
@@ -16,6 +27,6 @@
                     "remoteRoot": "."
                 }
             ]
-        },       
+        },
     ]
 }
