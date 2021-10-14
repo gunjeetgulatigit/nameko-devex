@@ -8,7 +8,7 @@ if  [ $# == 0 ]; then
 fi
 
 # Setup env if not available
-export PYTHONPATH=./gateway:./orders:./products
+export PYTHONPATH=./gateway:./orders:./products:./gateapi
 
 # Check if required env is set, if not exit in errors
 REQ_ENVS=(
@@ -34,12 +34,22 @@ fi
     PYTHONPATH=. alembic upgrade head
 )
 
+function cleanup {
+  if [ -n "${FAST_PID}" ]; then
+    kill -15 ${FAST_PID}
+  fi
+}
+trap cleanup EXIT
 
-# nameko show-config
+if [ -n "${FASTAPI}" ]; then
+    echo "FastAPI gateway is enabled..."
+    python gateapi/gateapi/main.py &
+    FAST_PID=$!
+fi
 
 if [ -n "${DEBUG}" ]; then
     echo "nameko service in debug mode. please connect to port 5678 to start service"
-    GEVENT_SUPPORT=True python -m debugpy --listen 5678 --wait-for-client run_nameko.py run --config config.yaml $@
+    GEVENT_SUPPORT=True python -m debugpy --listen 5678 --wait-for-client run_nameko.py run --config config.yml $@
 else
-    python run_nameko.py run --config config.yaml $@
+    python run_nameko.py run --config config.yml $@
 fi

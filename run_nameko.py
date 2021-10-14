@@ -1,4 +1,4 @@
-# Exact code from nameko pip shortcut
+# Exact code from nameko pip shortcut - for debugging
 import re
 import sys
 from nameko.cli import cli

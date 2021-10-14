@@ -10,4 +10,5 @@
 export AMQP_URI=amqp://guest:guest@localhost:5672
 
 # Run Service
-uvicorn gateapi.main:app $@
+# uvicorn gateapi.main:app $@
+PYTHONPATH=. python gateapi/main.py 
