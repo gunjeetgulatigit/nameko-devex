@@ -19,8 +19,8 @@ applications:
     <<: *defaults
     no-route: false
     health-check-type: port
-    command: ./cf_run.sh products.service orders.service gateway.service
-    # command: FASTAPI=X ./cf_run.sh products.service orders.service
+    command: FASTAPI=X ./cf_run.sh products.service orders.service
+    # command: ./cf_run.sh products.service orders.service gateway.service
 
 # Majestic Microservice (need to uncomment above)
 # applications:
