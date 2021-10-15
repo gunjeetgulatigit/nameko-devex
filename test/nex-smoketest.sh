@@ -30,7 +30,9 @@ echo STD_APP_URL=${STD_APP_URL}
 # Test: Create Products
 echo "=== Creating a product id: the_odyssey ==="
 curl -XPOST  "${STD_APP_URL}/products" \
-	 -d '{"id": "the_odyssey", "title": "The Odyssey", "passenger_capacity": 101, "maximum_speed": 5, "in_stock": 10}'
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"id": "the_odyssey", "title": "The Odyssey", "passenger_capacity": 101, "maximum_speed": 5, "in_stock": 10}'
 echo
 # Test: Get Product
 echo "=== Getting product id: the_odyssey ==="
@@ -38,7 +40,12 @@ curl -s "${STD_APP_URL}/products/the_odyssey" | jq .
 
 # Test: Create Order
 echo "=== Creating Order ==="
-ORDER_ID=$(curl -s -XPOST -d '{"order_details": [{"product_id": "the_odyssey", "price": "100000.99", "quantity": 1}]}' "${STD_APP_URL}/orders")
+ORDER_ID=$(
+    curl -s -XPOST "${STD_APP_URL}/orders" \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"order_details": [{"product_id": "the_odyssey", "price": "100000.99", "quantity": 1}]}' 
+)
 echo ${ORDER_ID}
 ID=$(echo ${ORDER_ID} | jq '.id')
 

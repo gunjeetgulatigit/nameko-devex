@@ -24,6 +24,9 @@ scenarios:
       label: products-create
       think-time: uniform(0s, 0s)
       method: POST
+      headers:
+        cache-control: no-cache
+        Content-Type: application/json
       body: 'request-body-string'
       body: >
         {
@@ -66,6 +69,9 @@ scenarios:
       label: orders-create
       think-time: uniform(0s, 0s)
       method: POST
+      headers:
+        cache-control: no-cache
+        Content-Type: application/json
       body: 'request-body-string'
       body: >
         {

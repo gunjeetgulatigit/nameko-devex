@@ -127,6 +127,27 @@ nameko service in debug mode. please connect to port 5678 to start service
 ```
 ![PerfTest](test/perftest.png)
 
+## FastAPI integration with nameko
+
+[FastAPI](https://fastapi.tiangolo.com/) is a modern, fast web framework for building APIs with build-in integration with [SwaggerUI](https://petstore.swagger.io/) and [Redoc](https://redocly.github.io/redoc/) for testing APIs.
+Essentially, `gateapi` module replaces `gateway` module for http endpoint development. Below are the instructions of enabling it.
+
+* Start nameko processes + fastapi without __gateway__ service
+```ssh
+FASTAPI=X ./dev_run.sh orders.service products.service
+```
+Note that `gateway.service` module is missing as it is being replace by fastapi. For more details how fastapi was started, please read [run.sh](run.sh)
+
+* Run smoketest and perf-test as usual. eg: `test/nex-smoketest.sh local` and `test/nex-bzt.sh local`
+
+* Test API manually via [http://localhost:8000/docs], for redoc use: [http://localhost:8000/redoc]
+
+* It will be useful checkout the different how to build http endpoints via nameko's [extension](https://nameko.readthedocs.io/en/stable/built_in_extensions.html#http) vs [fastapi](https://fastapi.tiangolo.com/tutorial/)
+
+#### Integration between FastAPI and nameko via Depends
+
+While nameko http service make it easy to call other nameko rpc/event services, [ClusterRpcProxyPool](gateapi/gateapi/api/dependencies.py) is created to make integration between FastAPI and Nameko seamless. Please checkout the different in implementation between gateway's [service.py](gateway/gateway/service.py) class with gateapi's [routers/order.py](gateapi/gateapi/api/routers/order.py) and [routers/product.py](gateapi/gateapi/api/routers/product.py)
+
 ## Deployment to Docker/K8S/CloudFoundry
 
 Please refer to [README-DevOps.md](README-DevOps.md)

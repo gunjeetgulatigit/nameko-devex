@@ -4,7 +4,7 @@ defaults: &defaults
     - python_buildpack
   memory: 2G
   disk_quota: 2G
-  health-check-type: process
+  health-check-type: port
   no-route: true
   # services:
   #   - nex-rabbitmq
@@ -19,7 +19,8 @@ applications:
     <<: *defaults
     no-route: false
     health-check-type: port
-    command: bash ./cf_run.sh gateway.service products.service orders.service
+    command: FASTAPI=X ./cf_run.sh products.service orders.service
+    # command: ./cf_run.sh products.service orders.service gateway.service
 
 # Majestic Microservice (need to uncomment above)
 # applications:

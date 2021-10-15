@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # setting up cf environment
-echo "Using Production Environment Variables in CF.."
+echo "Retrieving Production Environment Variables in CF.."
 
 export AMQP_URI=$(echo ${VCAP_SERVICES} | jq -r '.rabbitmq[0].credentials.uri')
 export POSTGRES_URI=$(echo ${VCAP_SERVICES} | jq -r '.postgresql[0].credentials.uri')/devex
