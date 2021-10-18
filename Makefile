@@ -127,7 +127,7 @@ deployCF: cf_target cf_cs_postgres cf_cs_rabbitmq cf_cs_redis
 	cf start $(CF_APP)
 
 undeployCF: cf_target 
-	cf delete $(CF_APP) -f 
+	cf delete $(CF_APP) -f -r
 	$(MAKE) cf_ds_postgres
 	$(MAKE) cf_ds_rabbitmq
 	$(MAKE) cf_ds_redis

@@ -64,24 +64,27 @@ For below instruction, we are assuming you have created a free CF acount from [P
 $ conda activate nameko-devex
 ```
 
-* Deploy to CF
+* Deploy to CF via make
 ```ssh
-(nameko-devex) devops/nex-deploy.sh <prefix>
+(nameko-devex) CF_APP=<prefix> make deployCF
 ```
 If prefix is `demo`, the above command will:
 - Create the following free backing service instances
-  * `demo-rabbitmq` for messaging
-  * `demo-postgres` for postgres (Order service)
-  * `demo-redis` for redis (Products service)
-- Deploy app(s) define in `manifest.yml` with:
-  * App name: `demo-namekoexample`
-  * URL: `demo-namekoexample.cfapps.io`
+  * `demo_rabbitmq` for messaging
+  * `demo_postgres` for postgres (Order service)
+  * `demo_redis` for redis (Products service)
+
+- Push `demo` app with _no-start_ option
+- Bind `demo` app to each backing service
+- Restage/restart `demo` app
+- Note: We can use `manifest.yml` for deployment without above step assuming the backing service is create prior
+  * URL: `demo.<CF_DOMAIN>`
 
 For multiple app deployment, uncomment appropriately in `manifest.yml` 
 
 * Undeploy apps from CF
 ```ssh
-(nameko-devex) devops/nex-undeploy.sh <prefix>
+(nameko-devex) CF_APP=<PREFIX> make undeployCF <prefix>
 ```
 
 * Verifying app works in CF
