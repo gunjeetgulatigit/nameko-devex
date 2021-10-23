@@ -37,6 +37,12 @@ pipeline {
                 stage('Create Dev Conda Env'){                   
                     steps {
                         script {
+                            if (currentBuild.number == 1) {
+                                build(job: currentBuild.fullProjectName, propagate: false, wait: false)
+                                currentBuild.result = "ABORTED"
+                                error("Job #1: aborting and re-build for initialize parameters")
+                            }
+
                             if (!params.PREFIX?.trim()) {
                                 env.PREFIX = sh(returnStdout: true, script: 'echo ${BUILD_TAG} | md5sum | cut -c -10').trim()
                             }
