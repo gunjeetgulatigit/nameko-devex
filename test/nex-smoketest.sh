@@ -18,10 +18,10 @@ PREFIX=$1
 
 # check if doing local smoke test
 if [ "${PREFIX}" != "local" ]; then
-    echo "Production Performance Test in CF"
+    echo "Remote Smoke Test in CF"
     STD_APP_URL=${PREFIX}
 else
-    echo "Local Performance Test"
+    echo "Local Smoke Test"
     STD_APP_URL=http://localhost:8000
 fi
 
@@ -29,7 +29,7 @@ echo STD_APP_URL=${STD_APP_URL}
 
 # Test: Create Products
 echo "=== Creating a product id: the_odyssey ==="
-curl -XPOST  "${STD_APP_URL}/products" \
+curl -s -XPOST  "${STD_APP_URL}/products" \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
     -d '{"id": "the_odyssey", "title": "The Odyssey", "passenger_capacity": 101, "maximum_speed": 5, "in_stock": 10}'
@@ -51,4 +51,4 @@ ID=$(echo ${ORDER_ID} | jq '.id')
 
 # Test: Get Order back
 echo "=== Getting Order ==="
-curl -s "${STD_APP_URL}/orders/${ID}" | jq -r
+curl -s "${STD_APP_URL}/orders/${ID}" | jq .
