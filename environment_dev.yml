@@ -2,7 +2,7 @@ name: nameko-devex
 channels:
 - conda-forge
 dependencies:
-- openjdk=8.0
+- openjdk=8.0                       #dev
 - python=3.7
 - pip==21
 - pip:
@@ -13,10 +13,10 @@ dependencies:
     - psycopg2-binary==2.8.2
     - nameko-sqlalchemy==1.5.0
     - alembic==1.0.10
-    - pylint==2.5.2
-    - debugpy==1.0.0b9
-    - bzt==1.15.3
-    - pytest==4.5.0
-    - coverage==4.5.3
-    - flake8==3.7.7
+    - pylint==2.5.2                 #dev
+    - debugpy==1.0.0b9              #dev
+    - bzt==1.15.3                   #dev
+    - pytest==4.5.0                 #dev
+    - coverage==4.5.3               #dev
+    - flake8==3.7.7                 #dev
     - redis==3.2.1
