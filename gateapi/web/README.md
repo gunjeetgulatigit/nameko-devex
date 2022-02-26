@@ -1,7 +1,7 @@
 # Exercise
 
 Please follow the README-DevEnv.md setup guide for the server until the smoke tests and unit tests are completed:
-[README-DevEnv.md](https://github.com/gitricko/nameko-devex/edit/master/README-DevEnv.md)
+[README-DevEnv.md](https://github.com/gitricko/nameko-devex/blob/master/README-DevEnv.md)
 
 After that, get into the gateapi/web folder, i.e., 
 ```
