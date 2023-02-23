@@ -7,16 +7,18 @@ dependencies:
 - pip==21
 - pip:
     - nameko==v3.0.0-rc9
+    - importlib-metadata==4.13.0
     - fastapi==0.70.0
     - uvicorn==0.15.0
     - marshmallow==2.19.2
     - psycopg2-binary==2.8.2
+    - sqlalchemy==1.4.46
     - nameko-sqlalchemy==1.5.0
-    - alembic==1.0.10
+    - alembic==1.9.3
     - pylint==2.5.2                 #dev
     - debugpy==1.0.0b9              #dev
     - bzt==1.15.3                   #dev
-    - pytest==4.5.0                 #dev
+    - pytest==7.2.0                 #dev
     - coverage==4.5.3               #dev
     - flake8==3.7.7                 #dev
     - redis==3.2.1

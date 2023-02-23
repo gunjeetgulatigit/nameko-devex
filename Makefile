@@ -30,10 +30,10 @@ coverage: test coverage-report coverage-html
 
 # test
 smoke-test:
-	./test/nex-smoketest.sh http://localhost:8003
+	./test/nex-smoketest.sh http://localhost:8000
 
 perf-test:
-	./test/nex-bzt.sh http://localhost:8003
+	./test/nex-bzt.sh http://localhost:8000
 
 # docker
 
