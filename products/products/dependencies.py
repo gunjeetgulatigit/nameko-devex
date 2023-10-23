@@ -65,12 +65,16 @@ class StorageWrapper:
     def update(self, product):
         try:
             product_key = self._format_key(product['id'])
+
+            if not self.client.exists(product_key):
+                raise NotFound(f'Product ID {product["id"]} does not exist')
+
             self.client.hmset(product_key, product)
 
             cache_key = f"cache:{product['id']}"
-            if self.client.exists(cache_key):
-                self.client.hmset(cache_key, product)
-                self.client.expire(cache_key, 3600)
+            self.client.hmset(cache_key, product)
+            self.client.expire(cache_key, 3600)
+
         except redis.RedisError as e:
             raise Exception(f"Error updating product in Redis: {e}")
 
