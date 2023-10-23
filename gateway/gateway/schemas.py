@@ -21,6 +21,13 @@ class ProductSchema(Schema):
     passenger_capacity = fields.Int(required=True)
 
 
+class UpdateProductSchema(Schema):
+    title = fields.Str(required=True)
+    maximum_speed = fields.Int(required=True)
+    in_stock = fields.Int(required=True)
+    passenger_capacity = fields.Int(required=True)
+
+
 class GetOrderSchema(Schema):
 
     class OrderDetail(Schema):

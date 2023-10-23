@@ -8,6 +8,13 @@ class Product(BaseModel):
     maximum_speed: int
     in_stock: int
 
+class UpdateProduct(BaseModel):
+    id: str
+    title: str
+    passenger_capacity: int
+    maximum_speed: int
+    in_stock: int
+
 
 class CreateOrderDetail(BaseModel):
     product_id: str

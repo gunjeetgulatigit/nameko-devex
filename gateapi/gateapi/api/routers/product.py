@@ -27,3 +27,11 @@ def create_product(request: schemas.Product, rpc = Depends(get_rpc)):
         return {
             "id": request.id
         }
+
+@router.put("/{product_id}", status_code=status.HTTP_200_OK, response_model=schemas.Product)
+def create_product(product_id: str, request: schemas.UpdateProduct, rpc = Depends(get_rpc)):
+    product_data = request.dict()
+    product_data['id'] = product_id
+
+    with rpc.next() as nameko:
+        return nameko.products.update(product_data)

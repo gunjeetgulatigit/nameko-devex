@@ -8,7 +8,7 @@ from werkzeug import Response
 
 from gateway.entrypoints import http
 from gateway.exceptions import OrderNotFound, ProductNotFound
-from gateway.schemas import CreateOrderSchema, GetOrderSchema, ProductSchema
+from gateway.schemas import CreateOrderSchema, GetOrderSchema, ProductSchema, UpdateProductSchema
 
 
 class GatewayService(object):
@@ -33,6 +33,27 @@ class GatewayService(object):
             ProductSchema().dumps(product).data,
             mimetype='application/json'
         )
+
+
+    @http(
+        "PUT", "/products/<string:product_id>",
+        expected_exceptions=(ValidationError, BadRequest, ProductNotFound)
+    )
+    def update_product(self, request, product_id):
+        schema = UpdateProductSchema(strict=True)
+        try:
+            product_data = schema.loads(request.get_data(as_text=True)).data
+        except ValueError as exc:
+            raise BadRequest("Invalid json: {}".format(exc))
+
+        product_data['id'] = product_id
+        self.products_rpc.update(product_data)
+
+        return Response(
+            ProductSchema().dumps(product_data).data,
+            mimetype='application/json'
+        )
+
 
     @http(
         "POST", "/products",
