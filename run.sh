@@ -27,7 +27,7 @@ if [ ${TO_EXIT} -eq 1 ]; then
 fi
 
 
-# Run Migrations for Postgres DB for Orders' backing service 
+# Run Migrations for Postgres DB for Orders' backing service
 (
     cd orders
     PYTHONPATH=. alembic revision --autogenerate -m "init"
