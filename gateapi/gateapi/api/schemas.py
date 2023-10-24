@@ -29,3 +29,6 @@ class CreateOrderSuccess(BaseModel):
 
 class CreateProductSuccess(BaseModel):
     id: str
+
+class DeleteProductSuccess(BaseModel):
+    id: str

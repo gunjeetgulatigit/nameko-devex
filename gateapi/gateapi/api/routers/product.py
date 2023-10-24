@@ -9,6 +9,7 @@ router = APIRouter(
     tags = ["Products"]
 )
 
+
 @router.get("/{product_id}", status_code=status.HTTP_200_OK, response_model=schemas.Product)
 def get_product(product_id: str, rpc = Depends(get_rpc)):
     try: 
@@ -20,6 +21,7 @@ def get_product(product_id: str, rpc = Depends(get_rpc)):
             detail=str(error)
         )
 
+
 @router.post("", status_code=status.HTTP_200_OK, response_model=schemas.CreateProductSuccess)
 def create_product(request: schemas.Product, rpc = Depends(get_rpc)):
     with rpc.next() as nameko:
@@ -28,6 +30,7 @@ def create_product(request: schemas.Product, rpc = Depends(get_rpc)):
             "id": request.id
         }
 
+
 @router.put("/{product_id}", status_code=status.HTTP_200_OK, response_model=schemas.Product)
 def create_product(product_id: str, request: schemas.UpdateProduct, rpc = Depends(get_rpc)):
     product_data = request.dict()
@@ -35,3 +38,12 @@ def create_product(product_id: str, request: schemas.UpdateProduct, rpc = Depend
 
     with rpc.next() as nameko:
         return nameko.products.update(product_data)
+
+
+@router.delete("/{product_id}", status_code=status.HTTP_204_OK)
+def delete_product(product_id: str, rpc = Depends(get_rpc)):
+    print("i was here")
+    with rpc.next() as nameko:
+        nameko.products.delete(product_id)
+
+

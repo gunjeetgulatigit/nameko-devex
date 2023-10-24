@@ -78,6 +78,21 @@ class StorageWrapper:
         except redis.RedisError as e:
             raise Exception(f"Error updating product in Redis: {e}")
 
+    def delete(self, product_id):
+        print(f"Deleting product {product_id}")
+        cache_key = f"cache:{product_id}"
+        product_key = self._format_key(product_id)
+
+        product_in_cache = self.client.hgetall(cache_key)
+
+        if not product_in_cache:
+            product_in_storage = self.client.hgetall(product_key)
+            if not product_in_storage:
+                raise NotFound(f'Product ID {product_id} does not exist')
+
+        self.client.delete(cache_key)
+        self.client.delete(product_key)
+
 
     def decrement_stock(self, product_id, amount):
         return self.client.hincrby(
