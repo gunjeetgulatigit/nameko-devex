@@ -64,6 +64,20 @@ scenarios:
         product_key: $.id
         default: NOT_FOUND
 
+      # 3. Update Product
+    - url: /products/${product_id}
+      label: product-update
+      method: PUT
+      headers:
+        Content-Type: application/json
+      body: >
+        {
+          "title": "new Title",
+          "passenger_capacity": ${__javaScript(Math.random())},
+          "maximum_speed": ${__javaScript(Math.random())},
+          "in_stock": ${__javaScript(Math.random())}
+        }    
+
     # 3. Create Orders
     - url: /orders
       label: orders-create
@@ -72,7 +86,6 @@ scenarios:
       headers:
         cache-control: no-cache
         Content-Type: application/json
-      body: 'request-body-string'
       body: >
         {
           "order_details": [{"product_id": "${product_id}", "price": "100000.99", "quantity": 1}]
@@ -108,6 +121,11 @@ scenarios:
     - if: '"${order_id}" == "NOT_FOUND"'
       then:
         - action: continue
+
+      # 4. Delete Product
+    - url: /products/${product_id}
+      label: product-delete
+      method: DELETE
   
 reporting:
 - module: final-stats
