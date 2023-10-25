@@ -16,7 +16,6 @@ def service_container(test_config, container_factory):
 
 
 def test_get_product(create_product, service_container):
-
     stored_product = create_product()
 
     with entrypoint_hook(service_container, 'get') as get:
@@ -26,14 +25,12 @@ def test_get_product(create_product, service_container):
 
 
 def test_get_product_fails_on_not_found(service_container):
-
     with pytest.raises(NotFound):
         with entrypoint_hook(service_container, 'get') as get:
             get(111)
 
 
 def test_list_products(products, service_container):
-
     with entrypoint_hook(service_container, 'list') as list_:
         listed_products = list_()
 
@@ -41,7 +38,6 @@ def test_list_products(products, service_container):
 
 
 def test_list_productis_when_empty(service_container):
-
     with entrypoint_hook(service_container, 'list') as list_:
         listed_products = list_()
 
@@ -49,7 +45,6 @@ def test_list_productis_when_empty(service_container):
 
 
 def test_create_product(product, redis_client, service_container):
-
     with entrypoint_hook(service_container, 'create') as create:
         create(product)
 
@@ -66,23 +61,22 @@ def test_create_product(product, redis_client, service_container):
 @pytest.mark.parametrize('product_overrides, expected_errors', [
     ({'id': 111}, {'id': ['Not a valid string.']}),
     (
-        {'passenger_capacity': 'not-an-integer'},
-        {'passenger_capacity': ['Not a valid integer.']}
+            {'passenger_capacity': 'not-an-integer'},
+            {'passenger_capacity': ['Not a valid integer.']}
     ),
     (
-        {'maximum_speed': 'not-an-integer'},
-        {'maximum_speed': ['Not a valid integer.']}
+            {'maximum_speed': 'not-an-integer'},
+            {'maximum_speed': ['Not a valid integer.']}
     ),
     (
-        {'in_stock': 'not-an-integer'},
-        {'in_stock': ['Not a valid integer.']}
+            {'in_stock': 'not-an-integer'},
+            {'in_stock': ['Not a valid integer.']}
     ),
 ])
 def test_create_product_validation_error(
-    product_overrides, expected_errors, product, redis_client,
-    service_container
+        product_overrides, expected_errors, product, redis_client,
+        service_container
 ):
-
     product.update(product_overrides)
 
     with pytest.raises(ValidationError) as exc_info:
@@ -95,9 +89,8 @@ def test_create_product_validation_error(
 @pytest.mark.parametrize('field', [
     'id', 'title', 'passenger_capacity', 'maximum_speed', 'in_stock'])
 def test_create_product_validation_error_on_required_fields(
-    field, product, redis_client, service_container
+        field, product, redis_client, service_container
 ):
-
     product.pop(field)
 
     with pytest.raises(ValidationError) as exc_info:
@@ -105,16 +98,15 @@ def test_create_product_validation_error_on_required_fields(
             create(product)
 
     assert (
-        {field: ['Missing data for required field.']} ==
-        exc_info.value.args[0])
+            {field: ['Missing data for required field.']} ==
+            exc_info.value.args[0])
 
 
 @pytest.mark.parametrize('field', [
     'id', 'title', 'passenger_capacity', 'maximum_speed', 'in_stock'])
 def test_create_product_validation_error_on_non_nullable_fields(
-    field, product, redis_client, service_container
+        field, product, redis_client, service_container
 ):
-
     product[field] = None
 
     with pytest.raises(ValidationError) as exc_info:
@@ -122,14 +114,13 @@ def test_create_product_validation_error_on_non_nullable_fields(
             create(product)
 
     assert (
-        {field: ['Field may not be null.']} ==
-        exc_info.value.args[0])
+            {field: ['Field may not be null.']} ==
+            exc_info.value.args[0])
 
 
 def test_handle_order_created(
-    test_config, products, redis_client, service_container
+        test_config, products, redis_client, service_container
 ):
-
     dispatch = event_dispatcher()
 
     payload = {
@@ -150,3 +141,39 @@ def test_handle_order_created(
     assert b'6' == product_one[b'in_stock']
     assert b'9' == product_two[b'in_stock']
     assert b'12' == product_three[b'in_stock']
+
+
+def test_delete_product(create_product, service_container):
+    stored_product = create_product()
+
+    with entrypoint_hook(service_container, 'delete') as delete:
+        delete(stored_product['id'])
+
+    with pytest.raises(NotFound):
+        with entrypoint_hook(service_container, 'get') as get:
+            get(stored_product['id'])
+
+
+def test_delete_product_not_found(service_container):
+    non_existent_product_id = 'xxxx-id'
+    with pytest.raises(NotFound) as exc_info:
+        with entrypoint_hook(service_container, 'delete') as delete:
+            delete(non_existent_product_id)
+
+    assert 'Product ID {} does not exist'.format(non_existent_product_id) == exc_info.value.args[0]
+
+
+def test_update_product(create_product, service_container):
+    stored_product = create_product()
+    updated_product = {
+        **stored_product,
+        'title': 'Updated Title',
+    }
+
+    with entrypoint_hook(service_container, 'update') as update:
+        update(updated_product)
+
+    with entrypoint_hook(service_container, 'get') as get:
+        loaded_product = get(stored_product['id'])
+
+    assert updated_product == loaded_product
