@@ -66,3 +66,17 @@ class OrdersService:
         order = self.db.query(Order).get(order_id)
         self.db.delete(order)
         self.db.commit()
+
+    @rpc
+    def list_orders(self, ids=None, page=1, per_page=10):
+        query = self.db.query(Order)
+
+        if ids:
+            query = query.filter(Order.id.in_(ids))
+
+        orders = query.offset((page - 1) * per_page).limit(per_page).all()
+
+        if not orders:
+            return []
+
+        return OrderSchema(many=True).dump(orders).data

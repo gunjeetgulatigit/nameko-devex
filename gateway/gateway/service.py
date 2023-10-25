@@ -8,7 +8,8 @@ from werkzeug import Response
 
 from gateway.entrypoints import http
 from gateway.exceptions import OrderNotFound, ProductNotFound
-from gateway.schemas import CreateOrderSchema, GetOrderSchema, ProductSchema, UpdateProductSchema
+from gateway.schemas import CreateOrderSchema, GetOrderSchema, ProductSchema, UpdateProductSchema, \
+    ListOrdersRequestSchema, ListOrderResponseSchema
 
 
 class GatewayService(object):
@@ -34,7 +35,6 @@ class GatewayService(object):
             mimetype='application/json'
         )
 
-
     @http(
         "PUT", "/products/<string:product_id>",
         expected_exceptions=(ValidationError, BadRequest, ProductNotFound)
@@ -56,7 +56,6 @@ class GatewayService(object):
             ProductSchema().dumps(product_data).data,
             mimetype='application/json'
         )
-
 
     @http(
         "DELETE", "/products/<string:product_id>",
@@ -200,3 +199,35 @@ class GatewayService(object):
             serialized_data['order_details']
         )
         return result['id']
+
+    @http("GET", "/orders", expected_exceptions=BadRequest)
+    def list_orders(self, request):
+        data = request.get_data(as_text=True) or "{}"
+        try:
+            validated_data = ListOrdersRequestSchema().loads(data).data
+            ids = validated_data.get("ids")
+            page = validated_data.get("page")
+            per_page = validated_data.get("per_page")
+        except ValidationError as error:
+            raise BadRequest("Validation error: {}".format(error))
+        except ValueError as exc:
+            raise BadRequest("Invalid json: {}".format(exc))
+
+        orders = self._list_orders(ids, page, per_page)
+        return Response(
+            ListOrderResponseSchema(many=True).dumps(orders).data,
+            mimetype='application/json'
+        )
+
+    def _list_orders(self, ids=None, page=1, per_page=10):
+        # Retrieve orders based on ids from the orders service.
+        orders = self.orders_rpc.list_orders(ids, page, per_page)
+
+        # For each order, enhance its details.
+        for order in orders:
+            image_root = config['PRODUCT_IMAGE_ROOT']
+            for item in order['order_details']:
+                product_id = item['product_id']
+                item['image'] = '{}/{}.jpg'.format(image_root, product_id)
+
+        return orders
