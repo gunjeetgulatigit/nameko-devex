@@ -46,6 +46,9 @@ class GatewayService(object):
         except ValueError as exc:
             raise BadRequest("Invalid json: {}".format(exc))
 
+        if not product_data:
+            raise BadRequest("Request must contain valid fields only")
+
         product_data['id'] = product_id
         self.products_rpc.update(product_data)
 

@@ -66,9 +66,6 @@ class StorageWrapper:
         try:
             product_key = self._format_key(product['id'])
 
-            if not self.client.exists(product_key):
-                raise NotFound(f'Product ID {product["id"]} does not exist')
-
             self.client.hmset(product_key, product)
 
             cache_key = f"cache:{product['id']}"
@@ -77,6 +74,7 @@ class StorageWrapper:
 
         except redis.RedisError as e:
             raise Exception(f"Error updating product in Redis: {e}")
+
 
     def delete(self, product_id):
         print(f"Deleting product {product_id}")

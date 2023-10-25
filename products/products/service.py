@@ -1,6 +1,7 @@
 import logging
 
 from nameko.events import event_handler
+from nameko.exceptions import BadRequest
 from nameko.rpc import rpc
 
 from products import dependencies, schemas
@@ -32,8 +33,9 @@ class ProductsService:
 
     @rpc
     def update(self, product):
-        product = schemas.Product(strict=True).load(product).data
-        self.storage.update(product)
+        existing_product = self.storage.get(product['id'])
+        updated_product = {**existing_product, **product}
+        self.storage.update(updated_product)
 
     @rpc
     def delete(self, product_id):
