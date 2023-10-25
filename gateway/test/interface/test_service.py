@@ -292,3 +292,54 @@ class TestCreateOrder(object):
         assert response.status_code == 404
         assert response.json()['error'] == 'PRODUCT_NOT_FOUND'
         assert response.json()['message'] == 'Product Id unknown'
+
+    class TestUpdateProduct(object):
+        def test_can_update_product(self, gateway_service, web_session):
+            gateway_service.products_rpc.update.return_value = None
+
+            response = web_session.put(
+                '/products/the_odyssey',
+                json.dumps({
+                    "title": "Updated Odyssey",
+                })
+            )
+            assert response.status_code == 200
+            assert gateway_service.products_rpc.update.call_args_list == [
+                call({"id": "the_odyssey", "title": "Updated Odyssey"})
+            ]
+
+        def test_update_product_not_found(self, gateway_service, web_session):
+            gateway_service.products_rpc.update.side_effect = ProductNotFound('missing')
+
+            response = web_session.put('/products/unknown_product', json.dumps({}))
+            assert response.status_code == 400
+            assert response.json()['error'] == 'BAD_REQUEST'
+
+        def test_update_product_null_body(self, gateway_service, web_session):
+            response = web_session.put('/products/the_odyssey', 'null')
+            assert response.status_code == 400
+            assert response.json()['error'] == 'BAD_REQUEST'
+            assert response.json()['message'] == "Request must contain valid fields only"
+
+        def test_update_product_invalid_data(self, gateway_service, web_session):
+            response = web_session.put(
+                '/products/the_odyssey',
+                json.dumps({"extraneous_field": "value"})
+            )
+            assert response.status_code == 400
+            assert response.json()['error'] == 'BAD_REQUEST'
+
+    class TestDeleteProduct(object):
+        def test_can_delete_product(self, gateway_service, web_session):
+            gateway_service.products_rpc.delete.return_value = None
+
+            response = web_session.delete('/products/the_odyssey')
+            assert response.status_code == 204
+            assert gateway_service.products_rpc.delete.call_args_list == [call("the_odyssey")]
+
+        def test_delete_product_not_found(self, gateway_service, web_session):
+            gateway_service.products_rpc.delete.side_effect = ProductNotFound('missing')
+
+            response = web_session.delete('/products/unknown_product')
+            assert response.status_code == 404
+            assert response.json()['error'] == 'PRODUCT_NOT_FOUND'
