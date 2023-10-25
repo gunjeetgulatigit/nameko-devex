@@ -126,6 +126,18 @@ scenarios:
     - url: /products/${product_id}
       label: product-delete
       method: DELETE
+
+      # 5. List All Orders (*)
+    - url: /orders
+      label: list-orders
+      think-time: uniform(0s, 0s)
+      method: GET
+
+      assert:
+        - contains:
+            - 200
+          subject: http-code
+          not: false
   
 reporting:
 - module: final-stats
