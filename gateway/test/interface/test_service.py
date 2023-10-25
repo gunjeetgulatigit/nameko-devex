@@ -54,15 +54,15 @@ class TestCreateProduct(object):
         assert response.status_code == 200
         assert response.json() == {'id': 'the_odyssey'}
         assert gateway_service.products_rpc.create.call_args_list == [call({
-                "in_stock": 10,
-                "maximum_speed": 5,
-                "id": "the_odyssey",
-                "passenger_capacity": 101,
-                "title": "The Odyssey"
-            })]
+            "in_stock": 10,
+            "maximum_speed": 5,
+            "id": "the_odyssey",
+            "passenger_capacity": 101,
+            "title": "The Odyssey"
+        })]
 
     def test_create_product_fails_with_invalid_json(
-        self, gateway_service, web_session
+            self, gateway_service, web_session
     ):
         response = web_session.post(
             '/products', 'NOT-JSON'
@@ -71,7 +71,7 @@ class TestCreateProduct(object):
         assert response.json()['error'] == 'BAD_REQUEST'
 
     def test_create_product_fails_with_invalid_data(
-        self, gateway_service, web_session
+            self, gateway_service, web_session
     ):
         response = web_session.post(
             '/products',
@@ -164,7 +164,9 @@ class TestGetOrder(object):
 
         # check dependencies called as expected
         assert [call(1)] == gateway_service.orders_rpc.get_order.call_args_list
-        assert [call()] == gateway_service.products_rpc.list.call_args_list
+        assert [call(['the_odyssey', 'the_enigma'])] == gateway_service.products_rpc.list.call_args_list
+
+
 
     def test_order_not_found(self, gateway_service, web_session):
         gateway_service.orders_rpc.get_order.side_effect = (
@@ -228,7 +230,7 @@ class TestCreateOrder(object):
         ]
 
     def test_create_order_fails_with_invalid_json(
-        self, gateway_service, web_session
+            self, gateway_service, web_session
     ):
         # call the gateway service to create the order
         response = web_session.post(
@@ -238,7 +240,7 @@ class TestCreateOrder(object):
         assert response.json()['error'] == 'BAD_REQUEST'
 
     def test_create_order_fails_with_invalid_data(
-        self, gateway_service, web_session
+            self, gateway_service, web_session
     ):
         # call the gateway service to create the order
         response = web_session.post(
@@ -256,7 +258,7 @@ class TestCreateOrder(object):
         assert response.json()['error'] == 'VALIDATION_ERROR'
 
     def test_create_order_fails_with_unknown_product(
-        self, gateway_service, web_session
+            self, gateway_service, web_session
     ):
         # setup mock products-service response:
         gateway_service.products_rpc.list.return_value = [
@@ -343,3 +345,52 @@ class TestCreateOrder(object):
             response = web_session.delete('/products/unknown_product')
             assert response.status_code == 404
             assert response.json()['error'] == 'PRODUCT_NOT_FOUND'
+
+
+class TestListOrders(object):
+    def test_can_list_orders(self, gateway_service, web_session):
+        gateway_service.orders_rpc.list_orders.return_value = [
+            {
+                'id': 1,
+                'order_details': [
+                    {
+                        'id': 1,
+                        'quantity': 2,
+                        'product_id': 'the_odyssey',
+                        'price': '200.00'
+                    },
+                    {
+                        'id': 2,
+                        'quantity': 1,
+                        'product_id': 'the_enigma',
+                        'price': '400.00'
+                    }
+                ]
+            },
+            {
+                'id': 2,
+                'order_details': [
+                    {
+                        'id': 3,
+                        'quantity': 3,
+                        'product_id': 'another_product',
+                        'price': '300.00'
+                    }
+                ]
+            }
+        ]
+
+        response = web_session.get('/orders')
+        assert response.status_code == 200
+        assert response.json() == gateway_service.orders_rpc.list_orders.return_value
+
+        assert gateway_service.orders_rpc.list_orders.call_args_list == [call(None, 1, 10)]
+
+    def test_list_orders_no_orders_found(self, gateway_service, web_session):
+        gateway_service.orders_rpc.list_orders.return_value = []
+
+        response = web_session.get('/orders')
+        assert response.status_code == 200
+        assert response.json() == []
+
+        assert gateway_service.orders_rpc.list_orders.call_args_list == [call(None, 1, 10)]
