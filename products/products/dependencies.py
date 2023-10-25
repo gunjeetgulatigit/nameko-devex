@@ -1,12 +1,13 @@
 from nameko import config
 from nameko.extensions import DependencyProvider
 import redis
+import logging
 
-from products.exceptions import NotFound
-
+from products.exceptions import NotFound, InvalidOperation
 
 REDIS_URI_KEY = 'REDIS_URI'
 
+logger = logging.getLogger(__name__)
 
 class StorageWrapper:
     """
@@ -93,6 +94,11 @@ class StorageWrapper:
 
 
     def decrement_stock(self, product_id, amount):
+        current_stock = int(self.client.hget(self._format_key(product_id), 'in_stock'))
+        if current_stock - amount < 0:
+            logger.error(f"Attempt to decrement stock below 0 for product ID {product_id}")
+            raise InvalidOperation(f"Insufficient stock for product ID {product_id}")
+
         return self.client.hincrby(
             self._format_key(product_id), 'in_stock', -amount)
 

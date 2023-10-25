@@ -40,7 +40,7 @@ class GatewayService(object):
         expected_exceptions=(ValidationError, BadRequest, ProductNotFound)
     )
     def update_product(self, request, product_id):
-        schema = UpdateProductSchema(strict=True)
+        schema = UpdateProductSchema()
         try:
             product_data = schema.loads(request.get_data(as_text=True)).data
         except ValueError as exc:

@@ -26,6 +26,9 @@ class UpdateProductSchema(Schema):
     maximum_speed = fields.Int()
     in_stock = fields.Int()
     passenger_capacity = fields.Int()
+    class Meta:
+        unknown = 'RAISE'
+
 
 
 class GetOrderSchema(Schema):
