@@ -53,10 +53,21 @@ class StorageWrapper:
         return self._from_hash(product)
 
 
-    def list(self):
-        keys = self.client.keys(self._format_key('*'))
+    def list(self, product_ids=None):
+        if product_ids and not isinstance(product_ids, list):
+            raise ValueError("product_ids must be a list or None")
+
+        if product_ids:
+            print("i was here 7")
+            keys = [self._format_key(product_id) for product_id in product_ids]
+        else:
+            keys = self.client.keys(self._format_key('*'))
+
         for key in keys:
-            yield self._from_hash(self.client.hgetall(key))
+            product_data = self.client.hgetall(key)
+            if product_data:
+                yield self._from_hash(product_data)
+
 
     def create(self, product):
         self.client.hmset(

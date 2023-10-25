@@ -68,9 +68,6 @@ class GatewayService(object):
             None, 204, mimetype='application/json'
         )
 
-
-
-
     @http(
         "POST", "/products",
         expected_exceptions=(ValidationError, BadRequest)
@@ -125,23 +122,17 @@ class GatewayService(object):
         )
 
     def _get_order(self, order_id):
-        # Retrieve order data from the orders service.
-        # Note - this may raise a remote exception that has been mapped to
-        # raise``OrderNotFound``
         order = self.orders_rpc.get_order(order_id)
 
-        # Retrieve all products from the products service
-        product_map = {prod['id']: prod for prod in self.products_rpc.list()}
+        product_ids_in_order = [item['product_id'] for item in order['order_details']]
 
-        # get the configured image root
+        product_map = {prod['id']: prod for prod in self.products_rpc.list(product_ids_in_order)}
+
         image_root = config['PRODUCT_IMAGE_ROOT']
 
-        # Enhance order details with product and image details.
         for item in order['order_details']:
             product_id = item['product_id']
-
             item['product'] = product_map[product_id]
-            # Construct an image url.
             item['image'] = '{}/{}.jpg'.format(image_root, product_id)
 
         return order
