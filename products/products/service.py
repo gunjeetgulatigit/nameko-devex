@@ -1,7 +1,6 @@
 import logging
 
 from nameko.events import event_handler
-from nameko.exceptions import BadRequest
 from nameko.rpc import rpc
 
 from products import dependencies, schemas
