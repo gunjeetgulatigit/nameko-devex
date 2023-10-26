@@ -183,13 +183,15 @@ class GatewayService(object):
         return Response(json.dumps({'id': id_}), mimetype='application/json')
 
     def _create_order(self, order_data):
-        # check order product ids are valid
-        valid_product_ids = {prod['id'] for prod in self.products_rpc.list()}
-        for item in order_data['order_details']:
-            if item['product_id'] not in valid_product_ids:
-                raise ProductNotFound(
-                    "Product Id {}".format(item['product_id'])
-                )
+        order_product_ids = {item['product_id'] for item in order_data['order_details']}
+
+        valid_products = self.products_rpc.list(product_ids=list(order_product_ids))
+
+        valid_product_ids = {prod['id'] for prod in valid_products}
+
+        invalid_ids = order_product_ids - valid_product_ids
+        if invalid_ids:
+            raise ProductNotFound(f"Product IDs not found: {', '.join(map(str, invalid_ids))}")
 
         # Call orders-service to create the order.
         # Dump the data through the schema to ensure the values are serialized
