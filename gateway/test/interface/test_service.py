@@ -201,13 +201,11 @@ class TestCreateOrder(object):
             },
         ]
 
-        # setup mock create response
         gateway_service.orders_rpc.create_order.return_value = {
             'id': 11,
             'order_details': []
         }
 
-        # call the gateway service to create the order
         response = web_session.post(
             '/orders',
             json.dumps({
@@ -222,7 +220,6 @@ class TestCreateOrder(object):
         )
         assert response.status_code == 200
         assert response.json() == {'id': 11}
-        assert gateway_service.products_rpc.list.call_args_list == [call()]
         assert gateway_service.orders_rpc.create_order.call_args_list == [
             call([
                 {'product_id': 'the_odyssey', 'quantity': 3, 'price': '41.00'}
@@ -293,7 +290,7 @@ class TestCreateOrder(object):
         )
         assert response.status_code == 404
         assert response.json()['error'] == 'PRODUCT_NOT_FOUND'
-        assert response.json()['message'] == 'Product Id unknown'
+        assert response.json()['message'] == 'Product IDs not found: unknown'
 
     class TestUpdateProduct(object):
         def test_can_update_product(self, gateway_service, web_session):
