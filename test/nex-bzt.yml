@@ -24,6 +24,9 @@ scenarios:
       label: products-create
       think-time: uniform(0s, 0s)
       method: POST
+      headers:
+        cache-control: no-cache
+        Content-Type: application/json
       body: 'request-body-string'
       body: >
         {
@@ -83,6 +86,19 @@ scenarios:
     - if: '"${order_id}" == "NOT_FOUND"'
       then:
         - action: continue
+
+     # 3. Delete Product    
+    - url: /products/the_odyssey
+      label: product-delete
+      think-time: uniform(0s, 0s)
+      method: DELETE
+      headers:
+        cache-control: no-cache
+      assert:
+      - contains:
+        - 204
+        subject: http-code
+        not: false 
   
     # 4. Get Orders
     - url: /orders/${order_id}
@@ -102,6 +118,18 @@ scenarios:
     - if: '"${order_id}" == "NOT_FOUND"'
       then:
         - action: continue
+
+    # 5. List Orders
+    - url: /orders
+      label: orders-list
+      think-time: uniform(0s, 0s)
+      method: GET
+
+      assert:
+      - contains:
+        - 200
+        subject: http-code
+        not: false       
   
 reporting:
 - module: final-stats
